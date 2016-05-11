@@ -1,0 +1,33 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CIHDS_Project"
+        xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing" x:Class="CIHDS_Project.MainWindow"
+        mc:Ignorable="d"
+        Title="Kinect Skeletal Tracker" MinHeight="600" MinWidth="700" MaxHeight="1080" MaxWidth="1920">
+    <Grid x:Name="KinectDisplay" Margin="10 0 10 0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid x:Name="LoginDisplay" Grid.RowSpan="2" Width="288" HorizontalAlignment="Center" VerticalAlignment="Center" d:IsHidden="True">
+            <TextBox x:Name="usernameTb" Text="" VerticalAlignment="Top" FontSize="18.667" MaxLength="29" MaxLines="1" Margin="106.297,2.144,0,0"/>
+            <PasswordBox x:Name="passwordBox" FontSize="18.667" MaxLength="8" Margin="106.297,48.458,0,42.868"/>
+            <Label x:Name="usernameLabel" Content="Username" VerticalAlignment="Top" Background="#00000000" FontSize="18.667" HorizontalAlignment="Left"/>
+            <Label x:Name="passwordLabel" Content="Password" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18.667" d:LayoutOverrides="HorizontalAlignment" Margin="5.836,39.83,0,0"/>
+            <Button x:Name="loginBtn" Content="Log In" Margin="41.5,0,45.112,5" VerticalAlignment="Bottom" FontSize="18.667" HorizontalAlignment="Center" Width="150"/>
+        </Grid>
+        <Grid x:Name="PatientDisplay" Margin="5,5,5,5" Grid.RowSpan="2">
+            <TextBlock Text="CIHDS System - Patient # 1000030123" Grid.Row="0" HorizontalAlignment="Left" Margin="10,0,0,0" FontFamily="Verdana"  FontSize="20" Height="24.307" VerticalAlignment="Top"/>
+            <StatusBar HorizontalAlignment="Stretch" MinHeight="20" MaxHeight="10" x:Name="statusBar" VerticalAlignment="Bottom" Background="White" Margin="0,0,6.771,-1.916" d:LayoutOverrides="VerticalAlignment" />
+            <Viewbox HorizontalAlignment="Center" Margin="336,24.307,342.771,-1.916" >
+                <Image Source="{Binding ImageSource}" Stretch="UniformToFill" />
+            </Viewbox>
+            <Button x:Name="nextBtn" Content="Step" HorizontalAlignment="Right" Height="29" Margin="10,5,10,10" VerticalAlignment="Top" Width="150" FontSize="16"/>
+            <TextBlock x:Name="stepDialog" HorizontalAlignment="Right" Margin="0,75,75,0" TextWrapping="Wrap" Text="Stand 4 Feet from Kinect!" VerticalAlignment="Top" FontSize="21.333" TextAlignment="Center" Width="250" Background="#FFDADADA"/>
+        </Grid>
+    </Grid>
+</Window>
