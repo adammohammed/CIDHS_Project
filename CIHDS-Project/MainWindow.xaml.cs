@@ -25,7 +25,7 @@ namespace CIHDS_Project
         KinectSensor sensor;
         MultiSourceFrameReader _reader;
         IList<Body> bodies;
-
+        CoordinateMapper cm;
         #region Constructor
         public MainWindow()
         {
@@ -44,6 +44,8 @@ namespace CIHDS_Project
 
                 _reader = sensor.OpenMultiSourceFrameReader(FrameSourceTypes.Body | FrameSourceTypes.Color);
                 _reader.MultiSourceFrameArrived += Reader_FrameArrived;
+                cm = sensor.CoordinateMapper;
+                Extensions.CreateBones();
             }
 
 
@@ -58,6 +60,32 @@ namespace CIHDS_Project
                 if(frame != null)
                 {
                     camera.Source = frame.ToBitmap();
+                }
+            }
+
+            using(var frame = refFrame.BodyFrameReference.AcquireFrame())
+            {
+                Pen p = new Pen(new SolidColorBrush(Colors.Blue), 2);
+                if(frame != null)
+                {
+                    canvas.Children.Clear();
+
+                    bodies = new Body[frame.BodyFrameSource.BodyCount];
+
+                    frame.GetAndRefreshBodyData(bodies);
+
+                    Dictionary<JointType, Point> bodyPts = new Dictionary<JointType, Point>();
+
+                    foreach (var body in bodies)
+                    {
+                        if(body != null)
+                        {
+                            if(body.IsTracked)
+                            {
+                                canvas.DrawSkeleton(body.Joints, p, this.cm);
+                            }
+                        }
+                    }
                 }
             }
         }
