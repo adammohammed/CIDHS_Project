@@ -26,6 +26,7 @@ namespace CIHDS_Project
         MultiSourceFrameReader _reader;
         IList<Body> bodies;
         CoordinateMapper cm;
+        bool setup = false;
         #region Constructor
         public MainWindow()
         {
@@ -45,7 +46,7 @@ namespace CIHDS_Project
                 _reader = sensor.OpenMultiSourceFrameReader(FrameSourceTypes.Body | FrameSourceTypes.Color);
                 _reader.MultiSourceFrameArrived += Reader_FrameArrived;
                 cm = sensor.CoordinateMapper;
-                Extensions.CreateBones();
+                this.CreateBones();
             }
 
 
@@ -59,6 +60,12 @@ namespace CIHDS_Project
             {
                 if(frame != null)
                 {
+                    if (setup)
+                    {
+                        this.canvas.Width = frame.FrameDescription.Width;
+                        this.canvas.Height = frame.FrameDescription.Height;
+                        setup = true; 
+                    }
                     camera.Source = frame.ToBitmap();
                 }
             }
@@ -73,8 +80,6 @@ namespace CIHDS_Project
                     bodies = new Body[frame.BodyFrameSource.BodyCount];
 
                     frame.GetAndRefreshBodyData(bodies);
-
-                    Dictionary<JointType, Point> bodyPts = new Dictionary<JointType, Point>();
 
                     foreach (var body in bodies)
                     {
