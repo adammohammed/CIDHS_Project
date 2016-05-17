@@ -11,10 +11,17 @@
     <Grid>
         <Image Name="camera"/>
         <Canvas Name="canvas" />
+        <Grid VerticalAlignment="Top">
+            <TextBlock Name="instructionsTb" VerticalAlignment="Bottom" Text="Put your arms in the air to play!" TextAlignment="Center" TextWrapping="Wrap" FontSize="40" Background="#FFE3FAFF" />
+        </Grid> 
         <Grid>
-            <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Center">
-                <Button Name="stepBtn" Content="This is the button" FontSize="48" Width="1001" Height="68" />
-            </StackPanel> 
+            <Grid VerticalAlignment="Bottom">
+                <Button Name="stepBtn" Content="Reset/Next User" HorizontalAlignment="Right" FontSize="24" Padding="5,5,5,5" Margin="0,0,10,10" Click="StepBtn_Click">
+                    <Button.Effect>
+                        <DropShadowEffect/>
+                    </Button.Effect>
+                </Button>
+            </Grid> 
         </Grid>
     </Grid>
 </Window>

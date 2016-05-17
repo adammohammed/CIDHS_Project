@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Kinect;
+﻿using Microsoft.Kinect;
 
 namespace CIHDS_Project
 {
@@ -11,9 +6,18 @@ namespace CIHDS_Project
     {
 
 
-        public static string StatusText = "Raise both your hands above your shoulders to play!";
-        public enum GameState { Begin, Calibrating, FwdWalk, BwdWalk, SaveData, Finish};
+        public static string StatusText = "Raise your hands above your shoulders to play!";
+        public enum GameState : int { Begin, Calibrating, FwdWalk, BwdWalk, SaveData, Finish};
         public static GameState gameState = GameState.Begin;
+        public static string[] stateNames = {
+            "Begin",
+            "Calibrating",
+            "ForwardWalking",
+            "BackwardWalking",
+            "SaveData",
+            "Finished",
+        };
+        public static int user_id = 0;
 
         private static int count = 0;
         //Start Position for fwd walking stage
@@ -27,14 +31,6 @@ namespace CIHDS_Project
         private static float lowerWalkingThreshold = 0.9f;
         private static float upperWalkingThreshold = 1.3f;
         private static CSVLogger c = new CSVLogger();
-        private static string[] stateNames = {
-            "Begin",
-            "Calibrating",
-            "ForwardWalking",
-            "BackwardWalking",
-            "SaveData",
-            "Finished",
-        };
 
         public static void RunGame(this Body b)
         {
@@ -56,7 +52,7 @@ namespace CIHDS_Project
                 string s = stateNames[(int)gameState];
                 if (!c.IsRecording)
                 {
-                    c.Start(0);
+                    c.Start(user_id);
                 }
                 else
                 {
@@ -68,7 +64,7 @@ namespace CIHDS_Project
             switch (gameState)
             {
                 case GameState.Begin:
-                    StatusText = "Raise both your hands above your shoulders to play!";
+                    StatusText = "Put your arms in the air to play!";
                     // Check both hands above shoulders
                     float rhand = joints[JointType.HandRight].Position.Y;
                     float lhand = joints[JointType.HandLeft].Position.Y;
@@ -173,6 +169,13 @@ namespace CIHDS_Project
                     break;
             }
 
+        }
+
+        public static void setUserId(int id)
+        {
+            user_id = id;
+            gameState = GameState.Begin;
+            StatusText = "Put your arms in the air to play!";
         }
     }
 }

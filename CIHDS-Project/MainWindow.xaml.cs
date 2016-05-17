@@ -27,6 +27,8 @@ namespace CIHDS_Project
         IList<Body> bodies;
         CoordinateMapper cm;
         bool setup = false;
+        int id = 0;
+        
         #region Constructor
         public MainWindow()
         {
@@ -39,6 +41,7 @@ namespace CIHDS_Project
         {
             sensor = KinectSensor.GetDefault();
 
+            this.stepBtn.Click += StepBtn_Click;
             if(sensor != null)
             {
                 sensor.Open();
@@ -46,10 +49,16 @@ namespace CIHDS_Project
                 _reader = sensor.OpenMultiSourceFrameReader(FrameSourceTypes.Body | FrameSourceTypes.Color);
                 _reader.MultiSourceFrameArrived += Reader_FrameArrived;
                 cm = sensor.CoordinateMapper;
-                this.CreateBones();
-            }
+                if (!setup)
+                {
+                    this.CreateBones();
+                }
+            } 
+        }
 
-
+        private void StepBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Game.setUserId(++id);
         }
 
         private void Reader_FrameArrived(object sender, MultiSourceFrameArrivedEventArgs e)
@@ -61,7 +70,7 @@ namespace CIHDS_Project
             {
                 if(frame != null)
                 {
-                    if (setup)
+                    if (!setup)
                     {
                         this.canvas.Width = frame.FrameDescription.Width;
                         this.canvas.Height = frame.FrameDescription.Height;
@@ -99,7 +108,7 @@ namespace CIHDS_Project
             } // Using
 
             // Update the user text!
-            this.stepBtn.Content = Game.StatusText;
+            this.instructionsTb.Text = Game.StatusText;
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)

@@ -7,6 +7,7 @@ namespace CIHDS_Project
 {
     public class CSVLogger
     {
+        // Saves Kinects Data to CSV to Desktop 
         int _current = 0;
 
         bool _hasEnumeratedJoints = false;
@@ -17,12 +18,18 @@ namespace CIHDS_Project
 
         public string Result { get; protected set; }
 
+        public string DesktopFolder, CSVWriteDirectory;
+
         public void Start(int id )
         {
             IsRecording = true;
             Folder = DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
 
             Directory.CreateDirectory(Folder);
+            DesktopFolder = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+
+            CSVWriteDirectory = Path.Combine(DesktopFolder, "KinectData/user_" + id.ToString());
+            Directory.CreateDirectory(CSVWriteDirectory);
         }
 
         public void Update(Body body)
@@ -71,6 +78,8 @@ namespace CIHDS_Project
             {
                 Result = s + ".csv";
             }
+
+            Result = Path.Combine(CSVWriteDirectory, Result);
 
             using (StreamWriter writer = new StreamWriter(Result))
             {
