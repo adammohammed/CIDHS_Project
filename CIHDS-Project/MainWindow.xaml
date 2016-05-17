@@ -13,7 +13,7 @@
         <Canvas Name="canvas" />
         <Grid>
             <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Center">
-                <Button Content="This is the button" />
+                <Button Name="stepBtn" Content="This is the button" FontSize="48" Width="1001" Height="68" />
             </StackPanel> 
         </Grid>
     </Grid>

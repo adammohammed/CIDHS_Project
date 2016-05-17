@@ -38,7 +38,7 @@ namespace CIHDS_Project
                 frame.CopyConvertedFrameDataToArray(pixels, ColorImageFormat.Bgra);
             }
 
-            int stride = width * (format.BitsPerPixel / 8);
+            int stride = width * (format.BitsPerPixel / 8); 
             
             return BitmapSource.Create(width, height, 96, 96, format, null, pixels, stride);
         }
@@ -246,9 +246,5 @@ namespace CIHDS_Project
             return value;
         }
 
-    }
-
-
-
-
+    } 
 }

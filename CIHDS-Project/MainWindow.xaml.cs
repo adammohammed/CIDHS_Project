@@ -53,9 +53,10 @@ namespace CIHDS_Project
         }
 
         private void Reader_FrameArrived(object sender, MultiSourceFrameArrivedEventArgs e)
-        {
+        { 
             var refFrame = e.FrameReference.AcquireFrame();
 
+            // update the video stream
             using(var frame = refFrame.ColorFrameReference.AcquireFrame())
             {
                 if(frame != null)
@@ -70,6 +71,7 @@ namespace CIHDS_Project
                 }
             }
 
+            // update the body info
             using(var frame = refFrame.BodyFrameReference.AcquireFrame())
             {
                 Pen p = new Pen(new SolidColorBrush(Colors.Blue), 2);
@@ -83,16 +85,21 @@ namespace CIHDS_Project
 
                     foreach (var body in bodies)
                     {
+
                         if(body != null)
                         {
                             if(body.IsTracked)
                             {
                                 canvas.DrawSkeleton(body.Joints, p, this.cm);
-                            }
-                        }
-                    }
-                }
-            }
+                                body.RunGame();
+                            } // if body is tracked
+                        } // if body null
+                    } //foreach
+                } // if frame 
+            } // Using
+
+            // Update the user text!
+            this.stepBtn.Content = Game.StatusText;
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
