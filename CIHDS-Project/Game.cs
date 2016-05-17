@@ -26,6 +26,15 @@ namespace CIHDS_Project
         // Start Position for walking backward
         private static float lowerWalkingThreshold = 0.9f;
         private static float upperWalkingThreshold = 1.3f;
+        private static CSVLogger c = new CSVLogger();
+        private static string[] stateNames = {
+            "Begin",
+            "Calibrating",
+            "ForwardWalking",
+            "BackwardWalking",
+            "SaveData",
+            "Finished",
+        };
 
         public static void RunGame(this Body b)
         {
@@ -33,11 +42,29 @@ namespace CIHDS_Project
             
             CameraSpacePoint shoulder = joints[JointType.ShoulderLeft].Position;
 
+            // Clamp down if the Z axis numbers are not real
             if (shoulder.Z < 0)
             {
                 shoulder.Z = 0.1f;
             }
 
+            // Start recording if in any of these states
+            if (gameState == GameState.Calibrating ||
+                gameState == GameState.FwdWalk ||
+                gameState == GameState.BwdWalk)
+            {
+                string s = stateNames[(int)gameState];
+                if (!c.IsRecording)
+                {
+                    c.Start(0);
+                }
+                else
+                {
+                    c.Update(b);
+                }
+            }
+
+            // Check different values at different game times
             switch (gameState)
             {
                 case GameState.Begin:
@@ -59,8 +86,9 @@ namespace CIHDS_Project
                     {
                         count = 0;
                     }
-                    
                     break;
+
+                // Calibration - Moving Player to accurate Start Position
                 case GameState.Calibrating:
                     StatusText = "Move into position!";
 
@@ -81,10 +109,13 @@ namespace CIHDS_Project
                         if (count > 50)
                         {
                             count = 0;
+                            c.Stop("Calibration");
                             gameState = GameState.FwdWalk;
                         }
                     }
                     break;
+                    
+                // Forward Walk - Asks Player to move forward
                 case GameState.FwdWalk:
                     StatusText = "Move forward slowly";
                     
@@ -96,10 +127,13 @@ namespace CIHDS_Project
                         if (count > 5)
                         {
                             count = 0;
+                            c.Stop("ForwardWalking");
                             gameState = GameState.BwdWalk;
                         }
                     }
                     break;
+                    
+                // Backward Walk - Asks Player to return to starting location
                 case GameState.BwdWalk:
                     StatusText = "Walk back to the start";
                     if(shoulder.Z > upperPositionThreshold)
@@ -119,19 +153,26 @@ namespace CIHDS_Project
                         if (count > 30)
                         {
                             count = 0;
+                            c.Stop("BackwardWalking");
                             gameState = GameState.SaveData;
                         }
                     }
 
                     break;
+                    
+                // Puts the new files ina specific folder
                 case GameState.SaveData:
-                    StatusText = "Exercises Finished!"; 
+                    StatusText = "Exercises Finished!";
+                    count++;
                     //Save Dialog 
                     break;
+                 
+                // Game Reset
                 case GameState.Finish:
                     StatusText = "Thank You for Playing!";
                     break;
             }
+
         }
     }
 }

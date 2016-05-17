@@ -96,6 +96,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CSVLogger.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="MainWindow.xaml.cs">
