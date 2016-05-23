@@ -123,38 +123,7 @@ namespace CIHDS_Project
             bones.Add(new Tuple<JointType, JointType>(JointType.AnkleLeft, JointType.FootLeft));
             bones.Add(new Tuple<JointType, JointType>(JointType.AnkleRight, JointType.FootRight));
         }
-
-        public static void DrawBone(this Canvas c, IReadOnlyDictionary<JointType, Joint> joints, IDictionary<JointType, Point> jp, JointType j1, JointType j2, Pen p)
-        {
-            Joint joint0 = joints[j1];
-            Joint joint1 = joints[j2];
-
-            if (joint0.TrackingState == TrackingState.NotTracked ||
-                joint1.TrackingState == TrackingState.NotTracked)
-            {
-                return;
-            }
-
-            Pen drawPen = inferredBonePen;
-            if ((joint0.TrackingState == TrackingState.Tracked) &&
-                (joint1.TrackingState == TrackingState.Tracked))
-            {
-                drawPen = drawingPen;
-            }
-
-            Line line = new Line
-            {
-                X1 = float.IsInfinity(joint0.Position.X) ? 0 : joint0.Position.X,
-                Y1 = float.IsInfinity(joint0.Position.Y) ? 0 : joint0.Position.Y,
-                X2 = float.IsInfinity(joint1.Position.X) ? 0 : joint1.Position.X,
-                Y2 = float.IsInfinity(joint1.Position.Y) ? 0 : joint1.Position.Y,
-                StrokeThickness = 8,
-                Fill = Brushes.Aqua,
-                Stroke = new SolidColorBrush(Color.FromArgb(128, 0, 255, 0))
-            };
-            c.Children.Add(line);
-        }
-
+        
         public static void DrawPoint(this Canvas c, Brush b, Joint j, ColorSpacePoint point)
         {
             if (j.TrackingState == TrackingState.NotTracked) return;
