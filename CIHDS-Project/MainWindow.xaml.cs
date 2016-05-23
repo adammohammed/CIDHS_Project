@@ -28,7 +28,8 @@ namespace CIHDS_Project
         CoordinateMapper cm;
         bool setup = false;
         int id = 0;
-        
+        private bool canvasSized = false;
+
         #region Constructor
         public MainWindow()
         {
@@ -72,11 +73,17 @@ namespace CIHDS_Project
                 {
                     if (!setup)
                     {
-                        this.canvas.Width = frame.FrameDescription.Width;
-                        this.canvas.Height = frame.FrameDescription.Height;
+                        //this.canvas.Width = this.Width;
+                        //this.canvas.Height = this.Height;
                         setup = true; 
                     }
                     camera.Source = frame.ToBitmap();
+                    if (!canvasSized)
+                    {
+                        this.canvas.Width = camera.Width;
+                        this.canvas.Height = camera.Height;
+                        canvasSized = true;
+                    }
                 }
             }
 

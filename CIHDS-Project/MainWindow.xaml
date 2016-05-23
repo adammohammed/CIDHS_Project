@@ -6,11 +6,11 @@
         xmlns:local="clr-namespace:CIHDS_Project"
         xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing" x:Class="CIHDS_Project.MainWindow"
         mc:Ignorable="d"
-        Title="Kinect Skeletal Tracker" MinHeight="720" MinWidth="1280" MaxHeight="1080" MaxWidth="1920"
-        Loaded="Window_Loaded" Closing="Window_Closing" WindowState="Maximized">
+        Title="Kinect Skeletal Tracker" Width="1366" Height="768"
+        Loaded="Window_Loaded" Closing="Window_Closing" >
     <Grid>
-        <Image Name="camera"/>
-        <Canvas Name="canvas" />
+        <Image Name="camera" Height="768" Width="1366"/>
+        <Canvas Name="canvas" Height="768" Width="1366"/>
         <Grid VerticalAlignment="Top">
             <TextBlock Name="instructionsTb" VerticalAlignment="Bottom" Text="Put your arms in the air to play!" TextAlignment="Center" TextWrapping="Wrap" FontSize="40" Background="#FFE3FAFF" />
         </Grid> 
