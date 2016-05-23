@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Text;
 using Microsoft.Kinect;
 using System.IO;
@@ -17,12 +18,16 @@ namespace CIHDS_Project
         public string Folder { get; protected set; }
 
         public string Result { get; protected set; }
+        public Stopwatch stopwatch;
+        public long timestamp = 0;
 
         public string DesktopFolder, CSVWriteDirectory;
 
         public void Start(int id )
         {
             IsRecording = true;
+            stopwatch = new Stopwatch();
+            stopwatch.Start();
             Folder = DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
 
             Directory.CreateDirectory(Folder);
@@ -45,6 +50,7 @@ namespace CIHDS_Project
 
                 if (!_hasEnumeratedJoints)
                 {
+                    line.Append("TimeStamp,");
                     foreach (var joint in body.Joints.Values)
                     {
                         line.Append(string.Format("{0}_X,{0}_Y,{0}_Z,", joint.JointType.ToString()));
@@ -56,7 +62,7 @@ namespace CIHDS_Project
 
                 foreach (var joint in body.Joints.Values)
                 {
-                    line.Append(string.Format("{0},{1},{2},", joint.Position.X, joint.Position.Y, joint.Position.Z));
+                    line.Append(string.Format("{0},{1},{2},{3}", stopwatch.ElapsedMilliseconds, joint.Position.X, joint.Position.Y, joint.Position.Z));
                 }
 
                 writer.Write(line);
@@ -69,6 +75,8 @@ namespace CIHDS_Project
         {
             IsRecording = false;
             _hasEnumeratedJoints = false;
+
+            stopwatch.Stop();
 
             if (s == null)
             {
