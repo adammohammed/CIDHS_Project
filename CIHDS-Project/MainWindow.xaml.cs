@@ -73,8 +73,8 @@ namespace CIHDS_Project
                 {
                     if (!setup)
                     {
-                        //this.canvas.Width = this.Width;
-                        //this.canvas.Height = this.Height;
+                        this.canvas.Width = this.Width;
+                        this.canvas.Height = this.Height;
                         setup = true; 
                     }
                     camera.Source = frame.ToBitmap();
