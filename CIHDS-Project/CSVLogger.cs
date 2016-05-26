@@ -117,12 +117,12 @@ namespace CIHDS_Project
                 }
             }
 
-            calculateVelocities(bd, Result, Path.Combine(CSVWriteDirectory, "VEL" + s + ".csv"), nodes, 0);
-            calculateVelocities(bd, Path.Combine(CSVWriteDirectory, "VEL" + s + ".csv"), Path.Combine(CSVWriteDirectory, "Final"+s+".csv"), nodes, nodes*3);
+            calculateDerivatives(bd, Result, Path.Combine(CSVWriteDirectory, "VEL" + s + ".csv"), nodes, 0);
+            calculateDerivatives(bd, Path.Combine(CSVWriteDirectory, "VEL" + s + ".csv"), Path.Combine(CSVWriteDirectory, "Final"+s+".csv"), nodes, nodes*3);
             Directory.Delete(Folder, true);
         }
 
-        private void calculateVelocities(Body b, string InFile, string OutFile, int nodes, int offset)
+        private void calculateDerivatives(Body b, string InFile, string OutFile, int nodes, int offset)
         {
             using (StreamReader sr = new StreamReader(InFile))
             {
@@ -175,15 +175,15 @@ namespace CIHDS_Project
                         else
                         {
 
-                            for(int node = offset; node < nodes*3 + offset; node=node+3)
+                            for(int node = 0; node < nodes*3; node=node+3)
                             {
                                 var deltaTime = (float.Parse(line_split[0]) - float.Parse(PreviousLine[0])) / 1000.0f;
                                 newLines.Append(string.Format("{0},{1},{2}",
-                                    ((float.Parse(line_split[1 + node]) - (float.Parse(PreviousLine[1 + node]))) / deltaTime),
-                                    ((float.Parse(line_split[2 + node]) - (float.Parse(PreviousLine[2 + node]))) / deltaTime),
-                                    ((float.Parse(line_split[3 + node]) - (float.Parse(PreviousLine[3 + node]))) / deltaTime)
+                                    ((float.Parse(line_split[1 + node + offset]) - (float.Parse(PreviousLine[1 + node + offset]))) / deltaTime),
+                                    ((float.Parse(line_split[2 + node + offset]) - (float.Parse(PreviousLine[2 + node + offset]))) / deltaTime),
+                                    ((float.Parse(line_split[3 + node + offset]) - (float.Parse(PreviousLine[3 + node + offset]))) / deltaTime)
                                     ));
-                                if(node != (nodes*3 + offset - 1))
+                                if(node < (nodes-1)*3+offset)
                                 {
                                     newLines.Append(',');
                                 }                                     
