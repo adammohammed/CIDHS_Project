@@ -117,9 +117,14 @@ namespace CIHDS_Project
             // Update the user text!
             this.instructionsTb.Text = Game.StatusText;
         }
-
+ 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
+	    if(sensor != null)
+	    {
+		sensor.Close();
+		sensor = null;
+	    }
         }
     }
 }
