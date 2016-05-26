@@ -112,7 +112,7 @@ namespace CIHDS_Project
             Directory.Delete(Folder, true);
         }
 
-	private calcuawteVelocities(Body b, String inFile, String Outfile, int nodes)
+	private void calcuateVelocities(Body b, String InFile, String OutFile, int nodes)
 	{
 	    using (StreamReader sr = new StreamReader(inFile))
 	    {
@@ -121,20 +121,20 @@ namespace CIHDS_Project
 		using(StreamWriter s = new StreamWriter(OutFile))
 		{
 		    headerNew.Append(",");
-		    foreach (var joint in body.Joints.Values)
+		    foreach (var joint in b.Joints.Values)
 		    {
 			headerNew.Append(string.Format("{0}_vel,{1}_vel,{2}_vel", joint.JointType.ToString()));
 		    }
 		    s.Write(HeaderLine);
 		    s.WriteLine(headerNew);
 
-		    while(True)
+		    while(true)
 		    {
 			var line = sr.ReadLine();
 
 			if (line == null) break;
 			
-			s.Writeline(line);
+			s.WriteLine(line);
 			
 
 		    }
