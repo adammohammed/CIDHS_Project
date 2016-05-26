@@ -114,7 +114,7 @@ namespace CIHDS_Project
 
 	private void calcuateVelocities(Body b, String InFile, String OutFile, int nodes)
 	{
-	    using (StreamReader sr = new StreamReader(inFile))
+	    using (StreamReader sr = new StreamReader(InFile))
 	    {
 		String HeaderLine = sr.ReadLine();
 		StringBuilder headerNew = new StringBuilder();
