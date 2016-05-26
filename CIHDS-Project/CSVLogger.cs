@@ -117,11 +117,12 @@ namespace CIHDS_Project
                 }
             }
 
-            calculateVelocities(bd, Result, Path.Combine(CSVWriteDirectory, "VEL" + s + ".csv"), nodes);
+            calculateVelocities(bd, Result, Path.Combine(CSVWriteDirectory, "VEL" + s + ".csv"), nodes, 0);
+            calculateVelocities(bd, Path.Combine(CSVWriteDirectory, "VEL" + s + ".csv"), Path.Combine(CSVWriteDirectory, "Final"+s+".csv"), nodes, nodes*3);
             Directory.Delete(Folder, true);
         }
 
-        private void calculateVelocities(Body b, string InFile, string OutFile, int nodes)
+        private void calculateVelocities(Body b, string InFile, string OutFile, int nodes, int offset)
         {
             using (StreamReader sr = new StreamReader(InFile))
             {
@@ -132,7 +133,14 @@ namespace CIHDS_Project
                     newLines.Append(",");
                     foreach (var joint in b.Joints.Values)
                     {
-                        newLines.Append(string.Format("{0}_vel,{0}_vel,{0}_vel", joint.JointType));
+                        if (offset == 0)
+                        {
+                            newLines.Append(string.Format("{0}_Xvel,{0}_Yvel,{0}_Zvel", joint.JointType));
+                        }
+                        else
+                        {
+                            newLines.Append(string.Format("{0}_Xacc,{0}_Yacc,{0}_Zacc", joint.JointType));
+                        }
                         if(joint.JointType != JointType.ThumbRight)
                         {
                             newLines.Append(',');
@@ -153,10 +161,10 @@ namespace CIHDS_Project
                         newLines.Append(',');
                         if(firstLine)
                         {
-                            for(int i = 0; i < nodes*3; i++)
+                            for(int i = 0; i < nodes; i++)
                             {
-                                newLines.Append("0");
-                                if(i != nodes * 3 - 1)
+                                newLines.Append("0,0,0");
+                                if(i != nodes - 1)
                                 {
                                     newLines.Append(',');
                                 }
@@ -167,7 +175,7 @@ namespace CIHDS_Project
                         else
                         {
 
-                            for(int node = 0; node < nodes; node++)
+                            for(int node = offset; node < nodes*3 + offset; node=node+3)
                             {
                                 var deltaTime = (float.Parse(line_split[0]) - float.Parse(PreviousLine[0])) / 1000.0f;
                                 newLines.Append(string.Format("{0},{1},{2}",
@@ -175,7 +183,7 @@ namespace CIHDS_Project
                                     ((float.Parse(line_split[2 + node]) - (float.Parse(PreviousLine[2 + node]))) / deltaTime),
                                     ((float.Parse(line_split[3 + node]) - (float.Parse(PreviousLine[3 + node]))) / deltaTime)
                                     ));
-                                if(node != nodes - 1)
+                                if(node != (nodes*3 + offset - 1))
                                 {
                                     newLines.Append(',');
                                 }                                     
