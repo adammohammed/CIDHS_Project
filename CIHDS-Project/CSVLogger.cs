@@ -109,6 +109,7 @@ namespace CIHDS_Project
                 }
             }
 
+	    calculateVelocities(bd, Result, Path.Combine(CSVWriteDirectory, "VEL"+s+".csv"), nodes)
             Directory.Delete(Folder, true);
         }
 
