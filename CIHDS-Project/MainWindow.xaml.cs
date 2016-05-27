@@ -73,8 +73,8 @@ namespace CIHDS_Project
                 {
                     if (!setup)
                     {
-                        //this.canvas.Width = this.Width;
-                        //this.canvas.Height = this.Height;
+                        this.canvas.Width = this.Width;
+                        this.canvas.Height = this.Height;
                         setup = true; 
                     }
                     camera.Source = frame.ToBitmap();
@@ -117,14 +117,19 @@ namespace CIHDS_Project
             // Update the user text!
             this.instructionsTb.Text = Game.StatusText;
         }
- 
+
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-	    if(sensor != null)
-	    {
-		sensor.Close();
-		sensor = null;
-	    }
+            if (sensor != null)
+            {
+                sensor.Close();
+                sensor = null;
+            }
+            if(_reader != null)
+            {
+                _reader.Dispose();
+                _reader = null;
+            }
         }
     }
 }

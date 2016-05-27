@@ -140,8 +140,8 @@ namespace CIHDS_Project
             float pointY = float.IsInfinity(point.Y) ? 0 : point.Y;
 
             // Scaling
-            pointX = pointX / 1920.0f * (float)c.Width;
-            pointY = pointY / 1080.0f * (float)c.Height;
+            pointX = pointX / 1920.0f * (float)c.ActualWidth;
+            pointY = pointY / 1080.0f * (float)c.ActualHeight;
             Canvas.SetLeft(ellipse, pointX - ellipse.Width / 2);
             Canvas.SetTop(ellipse, pointY - ellipse.Height / 2);
 
@@ -168,12 +168,12 @@ namespace CIHDS_Project
 
         private static float scaleToHeight(this Canvas c, float p)
         {
-            return (p / 1080.0f * (float)c.Height);
+            return (p / 1080.0f * (float)c.ActualHeight);
         }
         
         private static float scaleToWidth(this Canvas c, float p)
         {
-            return (p / 1920.0f * (float)c.Width);
+            return (p / 1920.0f * (float)c.ActualWidth);
         }
     }
 }

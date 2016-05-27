@@ -20,11 +20,13 @@ namespace CIHDS_Project
         public string Result { get; protected set; }
         public Stopwatch stopwatch;
         public long timestamp = 0;
-
+        public Body bd;
+        public int nodes = 0;
         public string DesktopFolder, CSVWriteDirectory;
 
         public void Start(int id )
         {
+            nodes = 0;
             IsRecording = true;
             stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -50,10 +52,16 @@ namespace CIHDS_Project
 
                 if (!_hasEnumeratedJoints)
                 {
+                    bd = body;
                     line.Append("TimeStamp,");
                     foreach (var joint in body.Joints.Values)
                     {
-                        line.Append(string.Format("{0}_X,{0}_Y,{0}_Z,", joint.JointType.ToString()));
+                        line.Append(string.Format("{0}_X,{0}_Y,{0}_Z", joint.JointType.ToString()));
+                        if (joint.JointType.ToString() != JointType.ThumbRight.ToString())
+                        {
+                            line.Append(',');
+                        }
+                        nodes++;
                     }
                     line.AppendLine();
 
@@ -109,39 +117,93 @@ namespace CIHDS_Project
                 }
             }
 
-	    calculateVelocities(bd, Result, Path.Combine(CSVWriteDirectory, "VEL"+s+".csv"), nodes)
+            calculateDerivatives(bd, Result, Path.Combine(CSVWriteDirectory, "VEL" + s + ".csv"), nodes, 0);
+            calculateDerivatives(bd, Path.Combine(CSVWriteDirectory, "VEL" + s + ".csv"), Path.Combine(CSVWriteDirectory, "Final"+s+".csv"), nodes, nodes*3);
             Directory.Delete(Folder, true);
         }
 
-	private void calcuateVelocities(Body b, String InFile, String OutFile, int nodes)
-	{
-	    using (StreamReader sr = new StreamReader(InFile))
-	    {
-		String HeaderLine = sr.ReadLine();
-		StringBuilder headerNew = new StringBuilder();
-		using(StreamWriter s = new StreamWriter(OutFile))
-		{
-		    headerNew.Append(",");
-		    foreach (var joint in b.Joints.Values)
-		    {
-			headerNew.Append(string.Format("{0}_vel,{1}_vel,{2}_vel", joint.JointType.ToString()));
-		    }
-		    s.Write(HeaderLine);
-		    s.WriteLine(headerNew);
+        private void calculateDerivatives(Body b, string InFile, string OutFile, int nodes, int offset)
+        {
+            using (StreamReader sr = new StreamReader(InFile))
+            {
+                String HeaderLine = sr.ReadLine();
+                StringBuilder newLines = new StringBuilder();
+                using (StreamWriter s = new StreamWriter(OutFile))
+                {
+                    newLines.Append(",");
+                    foreach (var joint in b.Joints.Values)
+                    {
+                        if (offset == 0)
+                        {
+                            newLines.Append(string.Format("{0}_Xvel,{0}_Yvel,{0}_Zvel", joint.JointType));
+                        }
+                        else
+                        {
+                            newLines.Append(string.Format("{0}_Xacc,{0}_Yacc,{0}_Zacc", joint.JointType));
+                        }
+                        if(joint.JointType != JointType.ThumbRight)
+                        {
+                            newLines.Append(',');
+                        }
+                    }
+                    s.Write(HeaderLine);
+                    s.WriteLine(newLines);
 
-		    while(true)
-		    {
-			var line = sr.ReadLine();
+                    newLines.Clear();
+                    bool firstLine = true;
+                    string[] PreviousLine = { };
+                    while (true)
+                    {
+                        var line = sr.ReadLine();
+                        if (line == null) break;
+                        var line_split = line.Split(',');
 
-			if (line == null) break;
-			
-			s.WriteLine(line);
-			
+                        newLines.Append(',');
+                        if(firstLine)
+                        {
+                            for(int i = 0; i < nodes; i++)
+                            {
+                                newLines.Append("0,0,0");
+                                if(i != nodes - 1)
+                                {
+                                    newLines.Append(',');
+                                }
 
-		    }
-		    
-		}
-	    }
-	}
+                            }
+                            firstLine = false;
+                        }
+                        else
+                        {
+
+                            for(int node = 0; node < nodes*3; node=node+3)
+                            {
+                                var deltaTime = (float.Parse(line_split[0]) - float.Parse(PreviousLine[0])) / 1000.0f;
+                                newLines.Append(string.Format("{0},{1},{2}",
+                                    ((float.Parse(line_split[1 + node + offset]) - (float.Parse(PreviousLine[1 + node + offset]))) / deltaTime),
+                                    ((float.Parse(line_split[2 + node + offset]) - (float.Parse(PreviousLine[2 + node + offset]))) / deltaTime),
+                                    ((float.Parse(line_split[3 + node + offset]) - (float.Parse(PreviousLine[3 + node + offset]))) / deltaTime)
+                                    ));
+                                if(node < (nodes-1)*3+offset)
+                                {
+                                    newLines.Append(',');
+                                }                                     
+                            }
+
+                        }
+
+
+                        s.Write(line);
+                        s.WriteLine(newLines);
+                        newLines.Clear();
+
+                        PreviousLine = line_split;
+                    }
+
+                }
+            }
+        }
+
+
+
     }
 }

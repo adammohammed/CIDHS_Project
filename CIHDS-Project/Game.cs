@@ -158,8 +158,20 @@ namespace CIHDS_Project
                     
                 // Puts the new files ina specific folder
                 case GameState.SaveData:
-                    StatusText = "Exercises Finished!";
                     count++;
+                    if (count % 30 == 0)
+                    {
+                        if (count == 150)
+                        {
+                            user_id++;
+                            gameState = GameState.Begin;
+                        }
+                        else
+                        {
+                            StatusText = "Resetting in ";
+                            StatusText += (5 - count / 30).ToString() + " seconds";
+                        }
+                    }
                     //Save Dialog 
                     break;
                  
