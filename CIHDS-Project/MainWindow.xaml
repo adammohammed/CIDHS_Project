@@ -16,10 +16,8 @@
         </Grid> 
         <Grid>
             <Grid VerticalAlignment="Bottom">
-                <Button Name="stepBtn" Content="Reset/Next User" HorizontalAlignment="Right" FontSize="24" Padding="5,5,5,5" Margin="0,0,10,10" Click="StepBtn_Click">
-                    <Button.Effect>
-                        <DropShadowEffect/>
-                    </Button.Effect>
+                <Button Name="stepBtn" Content="Reset/Next User" HorizontalAlignment="Right" FontSize="24" Padding="5,5,5,5" Margin="0,0,10,10" 
+                        Style="{DynamicResource SimpleButton}" Click="StepBtn_Click">
                 </Button>
             </Grid> 
         </Grid>
