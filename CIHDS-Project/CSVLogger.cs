@@ -3,6 +3,9 @@ using System.Diagnostics;
 using System.Text;
 using Microsoft.Kinect;
 using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using Combinatorics.Collections;
 
 namespace CIHDS_Project
 {
@@ -23,6 +26,12 @@ namespace CIHDS_Project
         public Body bd;
         public int nodes = 0;
         public string DesktopFolder, CSVWriteDirectory;
+
+        public IList<int> velIndex = Enumerable.Range(76, 75).ToList();
+        public IList<int> accIndex = Enumerable.Range(151, 75).ToList();
+        public Combinations<int> vel_ratios;
+        public Combinations<int> acc_ratios;
+        private bool combosCalculated = false;
 
         public void Start(int id )
         {
@@ -117,8 +126,8 @@ namespace CIHDS_Project
                 }
             }
 
-            calculateDerivatives(bd, Result, Path.Combine(CSVWriteDirectory, "VEL" + s + ".csv"), nodes, 0);
-            calculateDerivatives(bd, Path.Combine(CSVWriteDirectory, "VEL" + s + ".csv"), Path.Combine(CSVWriteDirectory, "Final"+s+".csv"), nodes, nodes*3);
+            calculateDerivatives(bd, Result, Path.Combine(CSVWriteDirectory, s + "_vel.csv"), nodes, 0);
+            calculateDerivatives(bd, Path.Combine(CSVWriteDirectory,  s + "_vel.csv"), Path.Combine(CSVWriteDirectory, s + "_vel_acc.csv"), nodes, nodes*3);
             Directory.Delete(Folder, true);
         }
 
@@ -183,7 +192,7 @@ namespace CIHDS_Project
                                     ((float.Parse(line_split[2 + node + offset]) - (float.Parse(PreviousLine[2 + node + offset]))) / deltaTime),
                                     ((float.Parse(line_split[3 + node + offset]) - (float.Parse(PreviousLine[3 + node + offset]))) / deltaTime)
                                     ));
-                                if(node < (nodes-1)*3+offset)
+                                if(node < (nodes-1)*3)
                                 {
                                     newLines.Append(',');
                                 }                                     
@@ -202,8 +211,90 @@ namespace CIHDS_Project
                 }
             }
         }
+ 
+        
+        public void CalculateRatios(string pathToDataFolder, string DataSheet, string outputFile)
+        { 
+            string[] nodes;
+            // Constants
+            if (!combosCalculated)
+            {
+                vel_ratios = new Combinations<int>(velIndex, 2);
+                acc_ratios = new Combinations<int>(accIndex, 2);
+                combosCalculated = true;
+            }
 
+            string DesktopFolder = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+            string userFolder = Path.Combine(DesktopFolder, pathToDataFolder);
+            // End of constants
+            using (StreamReader sr = new StreamReader(Path.Combine(userFolder, DataSheet)))
+            {
+                // Write Header
+                string header = sr.ReadLine(); 
+                nodes = header.Split(','); 
+                StringBuilder s = new StringBuilder();
+                s.Append(header + ','); 
 
+                // Velocity Combinations
+                foreach (var v in vel_ratios)
+                {
+                    s.Append(nodes[v[0]] + "/" + nodes[v[1]]);
+                    s.Append(',');
+                }
+
+                // Acceleration Combinations
+                foreach(var v in acc_ratios)
+                {
+                    s.Append(nodes[v[0]] + "/" + nodes[v[1]]);
+                    if(v[0] != accIndex[accIndex.Count-2])
+                    {
+                        s.Append(',');
+                    }
+
+                }
+                var target = Path.Combine(userFolder, "ratios_" + DataSheet);
+                if (File.Exists(target))
+                {
+                    File.Delete(target);
+                }
+                using (StreamWriter sw = new StreamWriter(Path.Combine(userFolder, outputFile)))
+                {
+                    
+                    while (true)
+                    {
+                        var instance = sr.ReadLine();
+                        if (instance == null) break;
+                        sw.WriteLine(s);
+                        s.Clear();
+                        s.Append(instance + ',');
+                        string[] data = new ArraySegment<string>(instance.Split(','), 76, 150).ToArray();
+
+                        // Velocity Combinations
+                        foreach (var v in vel_ratios)
+                        {
+                            s.Append(
+                               (float.Parse(data[v[0] - 76]) / float.Parse(data[v[1] - 76])).ToString()
+                                );
+                            s.Append(',');
+                        }
+
+                        // Acceleration Combinations
+                        foreach (var a in acc_ratios)
+                        {
+                            s.Append(
+                               (float.Parse(data[a[0] - 76]) / float.Parse(data[a[1] - 76])).ToString()
+                                );
+
+                            if (a[0] != accIndex[accIndex.Count - 2])
+                            {
+                                s.Append(',');
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
 
     }
 }

@@ -158,6 +158,14 @@ namespace CIHDS_Project
                     
                 // Puts the new files ina specific folder
                 case GameState.SaveData:
+                    StatusText = "Processing Calibration Data";
+                    c.CalculateRatios("KinectData/user_" + user_id.ToString(), "Calibration_vel_acc.csv", "Calibration_vel_acc_and_ratios.csv");
+                    
+                    StatusText = "Processing Forward Walking Data";
+                    c.CalculateRatios("KinectData/user_" + user_id.ToString(), "ForwardWalking_vel_acc.csv", "ForwardWalking_vel_acc_and_ratios.csv");
+
+                    StatusText = "Processing Backward Walking Data";
+                    c.CalculateRatios("KinectData/user_" + user_id.ToString(), "BackwardWalking_vel_acc.csv", "BackwardWalking_vel_acc_and_ratios.csv");
                     count++;
                     if (count % 30 == 0)
                     {
