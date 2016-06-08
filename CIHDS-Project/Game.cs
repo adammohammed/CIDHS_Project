@@ -1,4 +1,6 @@
 ﻿using Microsoft.Kinect;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace CIHDS_Project
 {
@@ -31,19 +33,21 @@ namespace CIHDS_Project
         private static float lowerWalkingThreshold = 0.9f;
         private static float upperWalkingThreshold = 1.3f;
         private static CSVLogger c = new CSVLogger();
+        private static IReadOnlyDictionary<JointType, Joint> joints;
+        private static CameraSpacePoint shoulder;
 
-        public static void RunGame(this Body b)
+        public static void RunGame(Body b)
         {
-            var joints = b.Joints;
-            
-            CameraSpacePoint shoulder = joints[JointType.ShoulderLeft].Position;
+
+            joints = b.Joints;
+
+            shoulder = joints[JointType.ShoulderLeft].Position;
 
             // Clamp down if the Z axis numbers are not real
             if (shoulder.Z < 0)
             {
                 shoulder.Z = 0.1f;
             }
-
             // Start recording if in any of these states
             if (gameState == GameState.Calibrating ||
                 gameState == GameState.FwdWalk ||
@@ -59,7 +63,6 @@ namespace CIHDS_Project
                     c.Update(b);
                 }
             }
-
             // Check different values at different game times
             switch (gameState)
             {
@@ -166,6 +169,9 @@ namespace CIHDS_Project
 
                     StatusText = "Processing Backward Walking Data";
                     c.CalculateRatios("KinectData/user_" + user_id.ToString(), "BackwardWalking_vel_acc.csv", "BackwardWalking_vel_acc_and_ratios.csv");
+
+                    StatusText = "Data Processed - Please wait for reset";
+                    /*
                     count++;
                     if (count % 30 == 0)
                     {
@@ -180,6 +186,7 @@ namespace CIHDS_Project
                             StatusText += (5 - count / 30).ToString() + " seconds";
                         }
                     }
+                    */
                     //Save Dialog 
                     break;
                  
