@@ -9,13 +9,15 @@ namespace CIHDS_Project
 
 
         public static string StatusText = "Raise your hands above your shoulders to play!";
-        public enum GameState : int { Begin, Calibrating, FwdWalk, BwdWalk, SaveData, Finish};
+        public enum GameState : int { Begin, Calibrating, FwdWalk, BwdWalk, LeftWalk, RightWalk, SaveData, Finish};
         public static GameState gameState = GameState.Begin;
         public static string[] stateNames = {
             "Begin",
             "Calibrating",
             "ForwardWalking",
             "BackwardWalking",
+            "LeftWalking",
+            "RightWalking",
             "SaveData",
             "Finished",
         };
@@ -32,6 +34,11 @@ namespace CIHDS_Project
         // Start Position for walking backward
         private static float lowerWalkingThreshold = 0.9f;
         private static float upperWalkingThreshold = 1.3f;
+
+        // Left walking distance
+        private static float leftDistance = -3.0f;
+        private static float thresholdValue = 0.2f;
+
         private static CSVLogger c = new CSVLogger();
         private static IReadOnlyDictionary<JointType, Joint> joints;
         private static CameraSpacePoint shoulder;
@@ -153,10 +160,33 @@ namespace CIHDS_Project
                         {
                             count = 0;
                             c.Stop("BackwardWalking");
-                            gameState = GameState.SaveData;
+                            gameState = GameState.LeftWalk;
                         }
                     }
 
+                    break;
+
+                case GameState.LeftWalk:
+                    StatusText = "Turn left and walk around 5 ft";
+                    var head = joints[JointType.Head].Position;
+                    var positionX = Math.Abs(head.X);
+                    if(positionX > leftDistance+thresholdValue)
+                    {
+                        StatusText += " Keep Walking!";
+                        count = 0;
+                    }
+                    else if ((positionX < leftDistance + thresholdValue) &&
+                        (positionX > leftDistance - thresholdValue))
+                    {
+                        StatusText = "Stop Right There";
+                        count++;
+                        if(count > 50)
+                        {
+                            count = 0;
+                            c.Stop("LeftWalking");
+                            gameState = GameState.SaveData;
+                        } 
+                    }
                     break;
                     
                 // Puts the new files ina specific folder
