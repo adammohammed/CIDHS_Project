@@ -207,7 +207,7 @@ namespace CIHDS_Project
 
                 case GameState.RightWalk:
                     StatusText = "Turn right and walk around 5 ft";
-                    if(positionX < rightDistance+thresholdValue)
+                    if(positionX < rightDistance - thresholdValue)
                     {
                         StatusText += positionX.ToString() ;
                         count = 0;
@@ -215,7 +215,7 @@ namespace CIHDS_Project
                     else if ((positionX > rightDistance - thresholdValue) &&
                         (positionX < rightDistance + thresholdValue))
                     {
-                        StatusText = "Stop Right There";
+                        StatusText = "Stop Right There!";
                         count++;
                         if(count > 50)
                         {
