@@ -25,16 +25,22 @@ namespace CIHDS_Project
         public static int user_id = 0;
 
         private static int count = 0;
+
+        // Checkpoint threshold distance (in meters)
+        private static float thresholdValue = 0.20f;
+
         //Start Position for fwd walking stage
         //Ending Position for backward walking stage
-        private static float lowerPositionThreshold = 2.3f;
-        private static float upperPositionThreshold = 2.5f;
+        private static float backwardDistance = 2.4f;
+        private static float lowerPositionThreshold = backwardDistance - thresholdValue;
+        private static float upperPositionThreshold = backwardDistance + thresholdValue;
 
 
         // Finish position for walking forward
         // Start Position for walking backward
-        private static float lowerWalkingThreshold = 0.9f;
-        private static float upperWalkingThreshold = 1.3f;
+        private static float forwardDistance = 1.0f;
+        private static float lowerWalkingThreshold = forwardDistance - thresholdValue;
+        private static float upperWalkingThreshold = forwardDistance + thresholdValue;
 
         // Left walking distance
         private static float leftDistance = -0.55f;
@@ -42,15 +48,14 @@ namespace CIHDS_Project
         // Right walking distance
         private static float rightDistance = 0.55f;
 
-        // Sideways walking threshold
-        private static float thresholdValue = 0.15f;
 
         private static CSVLogger c = new CSVLogger();
         private static IReadOnlyDictionary<JointType, Joint> joints;
         private static CameraSpacePoint shoulder;
         private static CameraSpacePoint head;
         private static float positionX;
-
+        private static bool data_processed = false;
+        
         public static void RunGame(Body b)
         {
 
@@ -234,17 +239,21 @@ namespace CIHDS_Project
                     
                 // Puts the new files ina specific folder
                 case GameState.SaveData:
-                    StatusText = "Processing Calibration Data";
-                    c.CalculateRatios("KinectData/user_" + user_id.ToString(), "Calibration_vel_acc.csv", "Calibration_vel_acc_and_ratios.csv");
+                    if (!data_processed)
+                    {
+                        data_processed = true;
+                        StatusText = "Processing Calibration Data";
+                        c.CalculateRatios("KinectData/user_" + user_id.ToString(), "Calibration_vel_acc.csv", "Calibration_vel_acc_and_ratios.csv");
+
+                        StatusText = "Processing Forward Walking Data";
+                        c.CalculateRatios("KinectData/user_" + user_id.ToString(), "ForwardWalking_vel_acc.csv", "ForwardWalking_vel_acc_and_ratios.csv");
+
+                        StatusText = "Processing Backward Walking Data";
+                        c.CalculateRatios("KinectData/user_" + user_id.ToString(), "BackwardWalking_vel_acc.csv", "BackwardWalking_vel_acc_and_ratios.csv");
+                        
+                        StatusText = "Data Processed - Please wait for reset";
+                    }
                     
-                    StatusText = "Processing Forward Walking Data";
-                    c.CalculateRatios("KinectData/user_" + user_id.ToString(), "ForwardWalking_vel_acc.csv", "ForwardWalking_vel_acc_and_ratios.csv");
-
-                    StatusText = "Processing Backward Walking Data";
-                    c.CalculateRatios("KinectData/user_" + user_id.ToString(), "BackwardWalking_vel_acc.csv", "BackwardWalking_vel_acc_and_ratios.csv");
-
-                    StatusText = "Data Processed - Please wait for reset";
-                    /*
                     count++;
                     if (count % 30 == 0)
                     {
@@ -259,7 +268,7 @@ namespace CIHDS_Project
                             StatusText += (5 - count / 30).ToString() + " seconds";
                         }
                     }
-                    */
+                    
                     //Save Dialog 
                     break;
                  
