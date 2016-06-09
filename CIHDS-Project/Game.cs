@@ -97,6 +97,7 @@ namespace CIHDS_Project
                     float rhand = joints[JointType.HandRight].Position.Y;
                     float lhand = joints[JointType.HandLeft].Position.Y;
                     float topSpine = joints[JointType.SpineShoulder].Position.Y;
+                    data_processed = false;
                     if(rhand > topSpine && lhand > topSpine)
                     {
                         count++;
