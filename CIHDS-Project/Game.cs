@@ -1,5 +1,6 @@
 ﻿using Microsoft.Kinect;
 using System.Collections.Generic;
+using System;
 using System.Diagnostics;
 
 namespace CIHDS_Project
@@ -36,12 +37,19 @@ namespace CIHDS_Project
         private static float upperWalkingThreshold = 1.3f;
 
         // Left walking distance
-        private static float leftDistance = -3.0f;
-        private static float thresholdValue = 0.2f;
+        private static float leftDistance = -0.55f;
+
+        // Right walking distance
+        private static float rightDistance = 0.55f;
+
+        // Sideways walking threshold
+        private static float thresholdValue = 0.15f;
 
         private static CSVLogger c = new CSVLogger();
         private static IReadOnlyDictionary<JointType, Joint> joints;
         private static CameraSpacePoint shoulder;
+        private static CameraSpacePoint head;
+        private static float positionX;
 
         public static void RunGame(Body b)
         {
@@ -49,6 +57,8 @@ namespace CIHDS_Project
             joints = b.Joints;
 
             shoulder = joints[JointType.ShoulderLeft].Position;
+            head = joints[JointType.Head].Position;
+            positionX = head.X;
 
             // Clamp down if the Z axis numbers are not real
             if (shoulder.Z < 0)
@@ -58,7 +68,9 @@ namespace CIHDS_Project
             // Start recording if in any of these states
             if (gameState == GameState.Calibrating ||
                 gameState == GameState.FwdWalk ||
-                gameState == GameState.BwdWalk)
+                gameState == GameState.BwdWalk ||
+                gameState == GameState.LeftWalk ||
+                gameState == GameState.RightWalk)
             {
                 string s = stateNames[(int)gameState];
                 if (!c.IsRecording)
@@ -70,6 +82,7 @@ namespace CIHDS_Project
                     c.Update(b);
                 }
             }
+
             // Check different values at different game times
             switch (gameState)
             {
@@ -168,11 +181,9 @@ namespace CIHDS_Project
 
                 case GameState.LeftWalk:
                     StatusText = "Turn left and walk around 5 ft";
-                    var head = joints[JointType.Head].Position;
-                    var positionX = Math.Abs(head.X);
                     if(positionX > leftDistance+thresholdValue)
                     {
-                        StatusText += " Keep Walking!";
+                        StatusText += positionX.ToString() ;
                         count = 0;
                     }
                     else if ((positionX < leftDistance + thresholdValue) &&
@@ -184,8 +195,40 @@ namespace CIHDS_Project
                         {
                             count = 0;
                             c.Stop("LeftWalking");
+                            gameState = GameState.RightWalk;
+                        } 
+                    }
+                    else
+                    {
+                        StatusText += " Too far!";
+                        count = 0;
+                    }
+                    break;
+
+                case GameState.RightWalk:
+                    StatusText = "Turn right and walk around 5 ft";
+                    if(positionX < rightDistance+thresholdValue)
+                    {
+                        StatusText += positionX.ToString() ;
+                        count = 0;
+                    }
+                    else if ((positionX > rightDistance - thresholdValue) &&
+                        (positionX < rightDistance + thresholdValue))
+                    {
+                        StatusText = "Stop Right There";
+                        count++;
+                        if(count > 50)
+                        {
+                            count = 0;
+                            c.Stop("RightWalking");
+                            StatusText = "Saving/Processing Data...";
                             gameState = GameState.SaveData;
                         } 
+                    }
+                    else
+                    {
+                        StatusText += " Too far!";
+                        count = 0;
                     }
                     break;
                     
