@@ -36,7 +36,7 @@ namespace CIHDS_Project
         public Combinations<int> acc_ratios;
         private bool combosCalculated = false;
 
-        public void Start(int id )
+        public void Start(int id)
         {
             nodes = 0;
             IsRecording = true;
@@ -89,10 +89,10 @@ namespace CIHDS_Project
                 }
 
                 writer.Write(line);
-                string trackedpath = Path.Combine(Folder, _current.ToString()+"_tracked_state.line");
+                string trackedpath = Path.Combine(Folder, _current.ToString() + "_tracked_state.line");
                 using (StreamWriter writer_tracked = new StreamWriter(trackedpath))
                 {
-                    if(has_labeled_joints == false)
+                    if (has_labeled_joints == false)
                     {
                         notTracked.Append(labeler);
                         has_labeled_joints = true;
@@ -113,7 +113,7 @@ namespace CIHDS_Project
                     writer_tracked.Write(notTracked);
                     notTracked.Clear();
                 }
-                    _current++;
+                _current++;
             }
         }
 
@@ -151,19 +151,13 @@ namespace CIHDS_Project
                         {
                             line = reader.ReadToEnd();
                         }
-                        string line_tracked = string.Empty;
-                        using (StreamReader reader = new StreamReader(path_tracked))
-                        {
-                            line_tracked = reader.ReadToEnd();
-                        }
-
-                        writer.WriteLine(line+","+line_tracked);
+                        writer.WriteLine(line);
                     }
                 }
             }
 
             calculateDerivatives(bd, Result, Path.Combine(CSVWriteDirectory, s + "_vel.csv"), nodes, 0);
-            calculateDerivatives(bd, Path.Combine(CSVWriteDirectory,  s + "_vel.csv"), Path.Combine(CSVWriteDirectory, s + "_vel_acc.csv"), nodes, nodes*3);
+            calculateDerivatives(bd, Path.Combine(CSVWriteDirectory, s + "_vel.csv"), Path.Combine(CSVWriteDirectory, s + "_vel_acc.csv"), nodes, nodes * 3);
             Directory.Delete(Folder, true);
         }
 
@@ -186,7 +180,7 @@ namespace CIHDS_Project
                         {
                             newLines.Append(string.Format("{0}_Xacc,{0}_Yacc,{0}_Zacc", joint.JointType));
                         }
-                        if(joint.JointType != JointType.ThumbRight)
+                        if (joint.JointType != JointType.ThumbRight)
                         {
                             newLines.Append(',');
                         }
@@ -204,12 +198,12 @@ namespace CIHDS_Project
                         var line_split = line.Split(',');
 
                         newLines.Append(',');
-                        if(firstLine)
+                        if (firstLine)
                         {
-                            for(int i = 0; i < nodes; i++)
+                            for (int i = 0; i < nodes; i++)
                             {
                                 newLines.Append("0,0,0");
-                                if(i != nodes - 1)
+                                if (i != nodes - 1)
                                 {
                                     newLines.Append(',');
                                 }
@@ -220,7 +214,7 @@ namespace CIHDS_Project
                         else
                         {
 
-                            for(int node = 0; node < nodes*3; node=node+3)
+                            for (int node = 0; node < nodes * 3; node = node + 3)
                             {
                                 var deltaTime = (float.Parse(line_split[0]) - float.Parse(PreviousLine[0])) / 1000.0f;
                                 newLines.Append(string.Format("{0},{1},{2}",
@@ -228,10 +222,10 @@ namespace CIHDS_Project
                                     ((float.Parse(line_split[2 + node + offset]) - (float.Parse(PreviousLine[2 + node + offset]))) / deltaTime),
                                     ((float.Parse(line_split[3 + node + offset]) - (float.Parse(PreviousLine[3 + node + offset]))) / deltaTime)
                                     ));
-                                if(node < (nodes-1)*3)
+                                if (node < (nodes - 1) * 3)
                                 {
                                     newLines.Append(',');
-                                }                                     
+                                }
                             }
 
                         }
@@ -247,10 +241,10 @@ namespace CIHDS_Project
                 }
             }
         }
- 
-        
+
+
         public void CalculateRatios(string pathToDataFolder, string DataSheet, string outputFile)
-        { 
+        {
             string[] nodes;
             // Constants
             if (!combosCalculated)
@@ -268,8 +262,8 @@ namespace CIHDS_Project
             using (StreamReader sr = new StreamReader(Path.Combine(userFolder, DataSheet)))
             {
                 // Write Header
-                string header = sr.ReadLine(); 
-                nodes = header.Split(','); 
+                string header = sr.ReadLine();
+                nodes = header.Split(',');
                 StringBuilder s = new StringBuilder();
                 s.Append(header + ',');
 
@@ -295,7 +289,7 @@ namespace CIHDS_Project
                         if (j != 1)
                         {
                             s.Append(',');
-                        }else if( j == 1  && v[0] != comboIndex[comboIndex.Count - 2])
+                        } else if (j == 1 && v[0] != comboIndex[comboIndex.Count - 2])
                         {
                             s.Append(',');
                         }
@@ -309,7 +303,7 @@ namespace CIHDS_Project
                 }
                 using (StreamWriter sw = new StreamWriter(Path.Combine(userFolder, outputFile)))
                 {
-                    
+
                     while (true)
                     {
                         var instance = sr.ReadLine();
@@ -320,27 +314,58 @@ namespace CIHDS_Project
                         string[] data = new ArraySegment<string>(instance.Split(','), 76, 150).ToArray();
 
                         // Velocity Combinations
-                        for(int j = 0; j < 4; j++)
+                        for (int j = 0; j < 4; j++)
                         {
                             int offset = 0;
                             if (j < 2)
-                                offset =  j * 2;
+                                offset = j * 2;
                             else
-                                offset = 75 + (j-2) * 2;
+                                offset = 75 + (j - 2) * 2;
 
-                            foreach (var v in x_ratios) 
+                            foreach (var v in x_ratios)
                             {
                                 // 76 + j*2 results in +76 for x velocities and + 78 for Z velocities
-                                s.Append(float.Parse(data[v[0] + offset]) /  float.Parse(data[v[1] + offset]));
+                                s.Append(float.Parse(data[v[0] + offset]) / float.Parse(data[v[1] + offset]));
                                 //if (v[0] != comboIndex[comboIndex.Count - 2] && offset != 76 + 75 + 2) {
-                                    s.Append(',');
+                                s.Append(',');
                                 //}
                             }
                         }
                     }
                 }
+
             }
 
+            TrackedStatesToCSV(Path.Combine(userFolder, outputFile), Path.Combine(userFolder, DataSheet + "_tracking_states.csv"));
+            
+        }
+
+        private void TrackedStatesToCSV(string inputFile, string outputFile)
+        {
+
+            using (StreamReader sr = new StreamReader(inputFile))
+            {
+                using (StreamWriter writer = new StreamWriter(outputFile))
+                {
+                    for (int index = 0; index < _current; index++)
+                    {
+                        string path_tracked = Path.Combine(Folder, index.ToString() + "_tracked_state.line");
+                        StringBuilder line = new StringBuilder();
+
+                        line.Append(sr.ReadLine());
+
+                        if (File.Exists(path_tracked))
+                        {
+
+                            using (StreamReader reader = new StreamReader(path_tracked))
+                            {
+                                line.Append("," + reader.ReadToEnd());
+                            }
+                            writer.WriteLine(line);
+                        }
+                    }
+                }
+            }
         }
 
     }
