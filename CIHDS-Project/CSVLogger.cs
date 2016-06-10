@@ -57,12 +57,12 @@ namespace CIHDS_Project
             if (body == null || !body.IsTracked) return;
 
             string path = Path.Combine(Folder, _current.ToString() + ".line");
-            StringBuilder notTracked = new StringBuilder();
-            StringBuilder labeler = new StringBuilder();
-
             using (StreamWriter writer = new StreamWriter(path))
             {
                 StringBuilder line = new StringBuilder();
+                StringBuilder notTracked = new StringBuilder();
+                StringBuilder labeler = new StringBuilder();
+
 
                 if (!_hasEnumeratedJoints)
                 {
@@ -71,13 +71,15 @@ namespace CIHDS_Project
                     foreach (var joint in body.Joints.Values)
                     {
                         line.Append(string.Format("{0}_X,{0}_Y,{0}_Z", joint.JointType.ToString()));
+                        labeler.Append(string.Format("{0}", joint.JointType.ToString()));
                         if (joint.JointType.ToString() != JointType.ThumbRight.ToString())
                         {
                             line.Append(',');
+                            labeler.Append(",");
                         }
-                        labeler.Append(string.Format("{0},", joint.JointType.ToString()));
                         nodes++;
                     }
+                    line.Append("," + labeler);
                     line.AppendLine();
 
                     _hasEnumeratedJoints = true;
@@ -86,42 +88,24 @@ namespace CIHDS_Project
                 foreach (var joint in body.Joints.Values)
                 {
                     line.Append(string.Format("{0},{1},{2},{3}", stopwatch.ElapsedMilliseconds, joint.Position.X, joint.Position.Y, joint.Position.Z));
-                }
-
-                writer.Write(line);
-                string trackedpath = Path.Combine(Folder, _current.ToString() + "_tracked_state.line");
-                using (StreamWriter writer_tracked = new StreamWriter(trackedpath))
-                {
-                    if (has_labeled_joints == false)
+                    if (joint.TrackingState == TrackingState.NotTracked || joint.TrackingState == TrackingState.Inferred)
                     {
-                        notTracked.Append(labeler);
-                        has_labeled_joints = true;
-                        //notTracked.AppendLine();
+                        notTracked.Append("0");
                     }
                     else
                     {
-
-                        foreach (var joint in body.Joints.Values)
-                        {
-                            if (joint.TrackingState == TrackingState.NotTracked || joint.TrackingState == TrackingState.Inferred)
-                            {
-                                notTracked.Append("0");
-                            }
-                            else
-                            {
-                                notTracked.Append("1");
-                            }
-                            if(joint.JointType != JointType.ThumbRight)
-                            {
-                                notTracked.Append(',');
-                            }
-                        }
+                        notTracked.Append("1");
                     }
-                    writer_tracked.Write(notTracked);
-                    notTracked.Clear();
+                    if (joint.JointType != JointType.ThumbRight)
+                    {
+                        notTracked.Append(',');
+                    }
                 }
-                _current++;
+
+                writer.Write(line + "," + notTracked);
+                notTracked.Clear();
             }
+            _current++;
         }
 
         public void Stop(string s = null)
@@ -165,7 +149,6 @@ namespace CIHDS_Project
 
             calculateDerivatives(bd, Result, Path.Combine(CSVWriteDirectory, s + "_vel.csv"), nodes, 0);
             calculateDerivatives(bd, Path.Combine(CSVWriteDirectory, s + "_vel.csv"), Path.Combine(CSVWriteDirectory, s + "_vel_acc.csv"), nodes, nodes * 3);
-            TrackedStatesToCSV(Path.Combine(CSVWriteDirectory, s + "_vel_acc.csv"), Path.Combine(CSVWriteDirectory, s + "_vel_acc_states.csv"));
             Directory.Delete(Folder, true);
         }
 
@@ -346,37 +329,6 @@ namespace CIHDS_Project
             
         }
 
-        private void TrackedStatesToCSV(string inputFile, string outputFile)
-        {
-
-            using (StreamReader sr = new StreamReader(inputFile))
-            {
-                var index = 0;
-                using (StreamWriter writer = new StreamWriter(outputFile))
-                {
-                    while(true)
-                    {
-                        string path_tracked = Path.Combine(Folder, index.ToString() + "_tracked_state.line");
-                        StringBuilder line = new StringBuilder();
-
-                        string s = sr.ReadLine();
-                        if (s == null) break;
-                        line.Append(s);
-
-                        if (File.Exists(path_tracked))
-                        {
-
-                            using (StreamReader reader = new StreamReader(path_tracked))
-                            {
-                                line.Append("," + reader.ReadToEnd());
-                            }
-                            writer.WriteLine(line);
-                        }
-                        index++;
-                    }
-                }
-            }
-        }
 
     }
 }
