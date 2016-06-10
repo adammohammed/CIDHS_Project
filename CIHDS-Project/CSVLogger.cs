@@ -148,7 +148,7 @@ namespace CIHDS_Project
             }
 
             calculateDerivatives(bd, Result, Path.Combine(CSVWriteDirectory, s + "_vel.csv"), nodes, 0);
-            calculateDerivatives(bd, Path.Combine(CSVWriteDirectory, s + "_vel.csv"), Path.Combine(CSVWriteDirectory, s + "_vel_acc.csv"), nodes, nodes * 3);
+            calculateDerivatives(bd, Path.Combine(CSVWriteDirectory, s + "_vel.csv"), Path.Combine(CSVWriteDirectory, s + "_vel_acc.csv"), nodes, nodes * 3 + 25);
             Directory.Delete(Folder, true);
         }
 
@@ -261,10 +261,10 @@ namespace CIHDS_Project
                 // Velocity Combinations
                 for (int j = 0; j < 2; j++)
                 {
-                    int offset = 76 + j * 2;
+                    int offset = 101 + j * 2;
                     foreach (var v in x_ratios)
                     {
-                        // 76 + j*2 results in +76 for x velocities and + 78 for Z velocities
+                        // 101 + j*2 results in +76 for x velocities and + 101 for Z velocities
                         s.Append(nodes[v[0] + offset] + "/" + nodes[v[1] + offset]);
                         s.Append(',');
                     }
@@ -273,7 +273,7 @@ namespace CIHDS_Project
                 // Acceleration Combinations
                 for (int j = 0; j < 2; j++)
                 {
-                    int offset = 76 + 75 + j * 2;
+                    int offset = 101 + 75 + j * 2;
                     foreach (var v in x_ratios)
                     {
                         s.Append(nodes[v[0] + offset] + "/" + nodes[v[1] + offset]);
