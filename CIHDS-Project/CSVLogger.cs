@@ -96,7 +96,7 @@ namespace CIHDS_Project
                     {
                         notTracked.Append(labeler);
                         has_labeled_joints = true;
-                        notTracked.AppendLine();
+                        //notTracked.AppendLine();
                     }
                     else
                     {
@@ -105,11 +105,15 @@ namespace CIHDS_Project
                         {
                             if (joint.TrackingState == TrackingState.NotTracked || joint.TrackingState == TrackingState.Inferred)
                             {
-                                notTracked.Append("0,");
+                                notTracked.Append("0");
                             }
                             else
                             {
-                                notTracked.Append("1,");
+                                notTracked.Append("1");
+                            }
+                            if(joint.JointType != JointType.ThumbRight)
+                            {
+                                notTracked.Append(',');
                             }
                         }
                     }
