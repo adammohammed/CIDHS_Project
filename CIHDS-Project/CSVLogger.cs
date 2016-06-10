@@ -237,6 +237,7 @@ namespace CIHDS_Project
         public void CalculateRatios(string pathToDataFolder, string DataSheet, string outputFile)
         {
             string[] nodes;
+            int velocityIndex = 101;
             // Constants
             if (!combosCalculated)
             {
@@ -261,7 +262,7 @@ namespace CIHDS_Project
                 // Velocity Combinations
                 for (int j = 0; j < 2; j++)
                 {
-                    int offset = 101 + j * 2;
+                    int offset = velocityIndex + j * 2;
                     foreach (var v in x_ratios)
                     {
                         // 101 + j*2 results in +76 for x velocities and + 101 for Z velocities
@@ -273,7 +274,7 @@ namespace CIHDS_Project
                 // Acceleration Combinations
                 for (int j = 0; j < 2; j++)
                 {
-                    int offset = 101 + 75 + j * 2;
+                    int offset = velocityIndex + 75 + j * 2;
                     foreach (var v in x_ratios)
                     {
                         s.Append(nodes[v[0] + offset] + "/" + nodes[v[1] + offset]);
@@ -302,7 +303,7 @@ namespace CIHDS_Project
                         sw.WriteLine(s);
                         s.Clear();
                         s.Append(instance + ',');
-                        string[] data = new ArraySegment<string>(instance.Split(','), 76, 150).ToArray();
+                        string[] data = new ArraySegment<string>(instance.Split(','), velocityIndex, 150).ToArray();
 
                         // Velocity Combinations
                         for (int j = 0; j < 4; j++)
