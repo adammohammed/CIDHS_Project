@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Kinect;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace CIHDS_Project
 {
@@ -29,6 +30,7 @@ namespace CIHDS_Project
         bool setup = false;
         int id = 0;
         private bool canvasSized = false;
+        private Stopwatch s = new Stopwatch();
 
         #region Constructor
         public MainWindow()
@@ -107,7 +109,7 @@ namespace CIHDS_Project
                             if(body.IsTracked)
                             {
                                 canvas.DrawSkeleton(body.Joints, p, this.cm);
-                                body.RunGame();
+                                Game.RunGame(body);
                             } // if body is tracked
                         } // if body null
                     } //foreach

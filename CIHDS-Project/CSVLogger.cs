@@ -30,6 +30,8 @@ namespace CIHDS_Project
 
         public IList<int> velIndex = Enumerable.Range(76, 75).ToList();
         public IList<int> accIndex = Enumerable.Range(151, 75).ToList();
+        public IList<int> comboIndex = Enumerable.Range(0, 25).Select(x => x * 3).ToList();
+        public Combinations<int> x_ratios;
         public Combinations<int> vel_ratios;
         public Combinations<int> acc_ratios;
         private bool combosCalculated = false;
@@ -253,8 +255,10 @@ namespace CIHDS_Project
             // Constants
             if (!combosCalculated)
             {
-                vel_ratios = new Combinations<int>(velIndex, 2);
-                acc_ratios = new Combinations<int>(accIndex, 2);
+                x_ratios = new Combinations<int>(comboIndex, 2);
+
+                //vel_ratios = new Combinations<int>(velIndex, 2);
+                //acc_ratios = new Combinations<int>(accIndex, 2);
                 combosCalculated = true;
             }
 
@@ -267,24 +271,36 @@ namespace CIHDS_Project
                 string header = sr.ReadLine(); 
                 nodes = header.Split(','); 
                 StringBuilder s = new StringBuilder();
-                s.Append(header + ','); 
+                s.Append(header + ',');
 
                 // Velocity Combinations
-                foreach (var v in vel_ratios)
+                for (int j = 0; j < 2; j++)
                 {
-                    s.Append(nodes[v[0]] + "/" + nodes[v[1]]);
-                    s.Append(',');
+                    int offset = 76 + j * 2;
+                    foreach (var v in x_ratios)
+                    {
+                        // 76 + j*2 results in +76 for x velocities and + 78 for Z velocities
+                        s.Append(nodes[v[0] + offset] + "/" + nodes[v[1] + offset]);
+                        s.Append(',');
+                    }
                 }
 
                 // Acceleration Combinations
-                foreach(var v in acc_ratios)
+                for (int j = 0; j < 2; j++)
                 {
-                    s.Append(nodes[v[0]] + "/" + nodes[v[1]]);
-                    if(v[0] != accIndex[accIndex.Count-2])
+                    int offset = 76 + 75 + j * 2;
+                    foreach (var v in x_ratios)
                     {
-                        s.Append(',');
-                    }
+                        s.Append(nodes[v[0] + offset] + "/" + nodes[v[1] + offset]);
+                        if (j != 1)
+                        {
+                            s.Append(',');
+                        }else if( j == 1  && v[0] != comboIndex[comboIndex.Count - 2])
+                        {
+                            s.Append(',');
+                        }
 
+                    }
                 }
                 var target = Path.Combine(userFolder, "ratios_" + DataSheet);
                 if (File.Exists(target))
@@ -304,24 +320,21 @@ namespace CIHDS_Project
                         string[] data = new ArraySegment<string>(instance.Split(','), 76, 150).ToArray();
 
                         // Velocity Combinations
-                        foreach (var v in vel_ratios)
+                        for(int j = 0; j < 4; j++)
                         {
-                            s.Append(
-                               (float.Parse(data[v[0] - 76]) / float.Parse(data[v[1] - 76])).ToString()
-                                );
-                            s.Append(',');
-                        }
+                            int offset = 0;
+                            if (j < 2)
+                                offset =  j * 2;
+                            else
+                                offset = 75 + (j-2) * 2;
 
-                        // Acceleration Combinations
-                        foreach (var a in acc_ratios)
-                        {
-                            s.Append(
-                               (float.Parse(data[a[0] - 76]) / float.Parse(data[a[1] - 76])).ToString()
-                                );
-
-                            if (a[0] != accIndex[accIndex.Count - 2])
+                            foreach (var v in x_ratios) 
                             {
-                                s.Append(',');
+                                // 76 + j*2 results in +76 for x velocities and + 78 for Z velocities
+                                s.Append(float.Parse(data[v[0] + offset]) /  float.Parse(data[v[1] + offset]));
+                                //if (v[0] != comboIndex[comboIndex.Count - 2] && offset != 76 + 75 + 2) {
+                                    s.Append(',');
+                                //}
                             }
                         }
                     }
