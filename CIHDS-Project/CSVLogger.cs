@@ -15,6 +15,7 @@ namespace CIHDS_Project
         int _current = 0;
 
         bool _hasEnumeratedJoints = false;
+        bool has_labeled_joints = false;
 
         public bool IsRecording { get; protected set; }
 
@@ -54,6 +55,8 @@ namespace CIHDS_Project
             if (body == null || !body.IsTracked) return;
 
             string path = Path.Combine(Folder, _current.ToString() + ".line");
+            StringBuilder notTracked = new StringBuilder();
+            StringBuilder labeler = new StringBuilder();
 
             using (StreamWriter writer = new StreamWriter(path))
             {
@@ -70,6 +73,7 @@ namespace CIHDS_Project
                         {
                             line.Append(',');
                         }
+                        labeler.Append(string.Format("{0},", joint.JointType.ToString()));
                         nodes++;
                     }
                     line.AppendLine();
@@ -83,8 +87,31 @@ namespace CIHDS_Project
                 }
 
                 writer.Write(line);
+                string trackedpath = Path.Combine(Folder, _current.ToString()+"_tracked_state.line");
+                using (StreamWriter writer_tracked = new StreamWriter(trackedpath))
+                {
+                    if(has_labeled_joints == false)
+                    {
+                        notTracked.Append(labeler);
+                        has_labeled_joints = true;
+                        notTracked.AppendLine();
+                    }
 
-                _current++;
+                    foreach (var joint in body.Joints.Values)
+                    {
+                        if (joint.TrackingState == TrackingState.NotTracked || joint.TrackingState == TrackingState.Inferred)
+                        {
+                            notTracked.Append("0,");
+                        }
+                        else
+                        {
+                            notTracked.Append("1,");
+                        }
+                    }
+                    writer_tracked.Write(notTracked);
+                    notTracked.Clear();
+                }
+                    _current++;
             }
         }
 
@@ -92,6 +119,7 @@ namespace CIHDS_Project
         {
             IsRecording = false;
             _hasEnumeratedJoints = false;
+            has_labeled_joints = false;
 
             stopwatch.Stop();
 
@@ -111,6 +139,7 @@ namespace CIHDS_Project
                 for (int index = 0; index < _current; index++)
                 {
                     string path = Path.Combine(Folder, index.ToString() + ".line");
+                    string path_tracked = Path.Combine(Folder, index.ToString() + "_tracked_state.line");
 
                     if (File.Exists(path))
                     {
@@ -120,8 +149,13 @@ namespace CIHDS_Project
                         {
                             line = reader.ReadToEnd();
                         }
+                        string line_tracked = string.Empty;
+                        using (StreamReader reader = new StreamReader(path_tracked))
+                        {
+                            line_tracked = reader.ReadToEnd();
+                        }
 
-                        writer.WriteLine(line);
+                        writer.WriteLine(line+","+line_tracked);
                     }
                 }
             }
