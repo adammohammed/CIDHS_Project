@@ -158,6 +158,7 @@ namespace CIHDS_Project
 
             calculateDerivatives(bd, Result, Path.Combine(CSVWriteDirectory, s + "_vel.csv"), nodes, 0);
             calculateDerivatives(bd, Path.Combine(CSVWriteDirectory, s + "_vel.csv"), Path.Combine(CSVWriteDirectory, s + "_vel_acc.csv"), nodes, nodes * 3);
+            TrackedStatesToCSV(Path.Combine(CSVWriteDirectory, s + "_vel_acc.csv"), Path.Combine(CSVWriteDirectory, s + "_vel_acc_states.csv"));
             Directory.Delete(Folder, true);
         }
 
@@ -345,14 +346,17 @@ namespace CIHDS_Project
 
             using (StreamReader sr = new StreamReader(inputFile))
             {
+                var index = 0;
                 using (StreamWriter writer = new StreamWriter(outputFile))
                 {
-                    for (int index = 0; index < _current; index++)
+                    while(true)
                     {
                         string path_tracked = Path.Combine(Folder, index.ToString() + "_tracked_state.line");
                         StringBuilder line = new StringBuilder();
 
-                        line.Append(sr.ReadLine());
+                        string s = sr.ReadLine();
+                        if (s == null) break;
+                        line.Append(s);
 
                         if (File.Exists(path_tracked))
                         {
@@ -363,6 +367,7 @@ namespace CIHDS_Project
                             }
                             writer.WriteLine(line);
                         }
+                        index++;
                     }
                 }
             }

@@ -244,13 +244,13 @@ namespace CIHDS_Project
                     {
                         data_processed = true;
                         StatusText = "Processing Calibration Data";
-                        c.CalculateRatios("KinectData/user_" + user_id.ToString(), "Calibration_vel_acc.csv", "Calibration_vel_acc_and_ratios.csv");
+                        c.CalculateRatios("KinectData/user_" + user_id.ToString(), "Calibration_vel_acc_states.csv", "Calibration_vel_acc_and_ratios.csv");
 
                         StatusText = "Processing Forward Walking Data";
-                        c.CalculateRatios("KinectData/user_" + user_id.ToString(), "ForwardWalking_vel_acc.csv", "ForwardWalking_vel_acc_and_ratios.csv");
+                        c.CalculateRatios("KinectData/user_" + user_id.ToString(), "ForwardWalking_vel_acc_states.csv", "ForwardWalking_vel_acc_and_ratios.csv");
 
                         StatusText = "Processing Backward Walking Data";
-                        c.CalculateRatios("KinectData/user_" + user_id.ToString(), "BackwardWalking_vel_acc.csv", "BackwardWalking_vel_acc_and_ratios.csv");
+                        c.CalculateRatios("KinectData/user_" + user_id.ToString(), "BackwardWalking_vel_acc_states.csv", "BackwardWalking_vel_acc_and_ratios.csv");
                         
                         StatusText = "Data Processed - Please wait for reset";
                     }
