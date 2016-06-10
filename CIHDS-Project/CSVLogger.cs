@@ -98,16 +98,19 @@ namespace CIHDS_Project
                         has_labeled_joints = true;
                         notTracked.AppendLine();
                     }
-
-                    foreach (var joint in body.Joints.Values)
+                    else
                     {
-                        if (joint.TrackingState == TrackingState.NotTracked || joint.TrackingState == TrackingState.Inferred)
+
+                        foreach (var joint in body.Joints.Values)
                         {
-                            notTracked.Append("0,");
-                        }
-                        else
-                        {
-                            notTracked.Append("1,");
+                            if (joint.TrackingState == TrackingState.NotTracked || joint.TrackingState == TrackingState.Inferred)
+                            {
+                                notTracked.Append("0,");
+                            }
+                            else
+                            {
+                                notTracked.Append("1,");
+                            }
                         }
                     }
                     writer_tracked.Write(notTracked);
@@ -336,8 +339,6 @@ namespace CIHDS_Project
                 }
 
             }
-
-            TrackedStatesToCSV(Path.Combine(userFolder, outputFile), Path.Combine(userFolder, DataSheet + "_tracking_states.csv"));
             
         }
 
