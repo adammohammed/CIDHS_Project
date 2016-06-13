@@ -55,6 +55,7 @@ namespace CIHDS_Project
         private static CameraSpacePoint head;
         private static float positionX;
         private static bool data_processed = false;
+        private static string outputName;
         
         public static void RunGame(Body b)
         {
@@ -71,13 +72,11 @@ namespace CIHDS_Project
                 shoulder.Z = 0.1f;
             }
             // Start recording if in any of these states
-            if (gameState == GameState.Calibrating ||
-                gameState == GameState.FwdWalk ||
-                gameState == GameState.BwdWalk ||
-                gameState == GameState.LeftWalk ||
+            if (gameState == GameState.Calibrating || gameState == GameState.FwdWalk ||
+                gameState == GameState.BwdWalk || gameState == GameState.LeftWalk ||
                 gameState == GameState.RightWalk)
             {
-                string s = stateNames[(int)gameState];
+                outputName = stateNames[(int)gameState];
                 if (!c.IsRecording)
                 {
                     c.Start(user_id);
@@ -134,7 +133,7 @@ namespace CIHDS_Project
                         if (count > 50)
                         {
                             count = 0;
-                            c.Stop("Calibration");
+                            c.Stop(outputName);
                             gameState = GameState.FwdWalk;
                         }
                     }
@@ -152,7 +151,7 @@ namespace CIHDS_Project
                         if (count > 5)
                         {
                             count = 0;
-                            c.Stop("ForwardWalking");
+                            c.Stop(outputName);
                             gameState = GameState.BwdWalk;
                         }
                     }
@@ -178,7 +177,7 @@ namespace CIHDS_Project
                         if (count > 30)
                         {
                             count = 0;
-                            c.Stop("BackwardWalking");
+                            c.Stop(outputName);
                             gameState = GameState.LeftWalk;
                         }
                     }
@@ -200,7 +199,7 @@ namespace CIHDS_Project
                         if(count > 50)
                         {
                             count = 0;
-                            c.Stop("LeftWalking");
+                            c.Stop(outputName);
                             gameState = GameState.RightWalk;
                         } 
                     }
@@ -226,7 +225,7 @@ namespace CIHDS_Project
                         if(count > 50)
                         {
                             count = 0;
-                            c.Stop("RightWalking");
+                            c.Stop(outputName);
                             StatusText = "Saving/Processing Data...";
                             gameState = GameState.SaveData;
                         } 
@@ -244,13 +243,19 @@ namespace CIHDS_Project
                     {
                         data_processed = true;
                         StatusText = "Processing Calibration Data";
-                        c.CalculateRatios("KinectData/user_" + user_id.ToString(), "Calibration_vel_acc.csv", "Calibration_vel_acc_and_ratios.csv");
+                        c.CalculateRatios("KinectData/user_" + user_id.ToString(), "Calibrating_vel_acc.csv", "Calibrating_vel_acc_and_ratios.csv");
 
                         StatusText = "Processing Forward Walking Data";
                         c.CalculateRatios("KinectData/user_" + user_id.ToString(), "ForwardWalking_vel_acc.csv", "ForwardWalking_vel_acc_and_ratios.csv");
 
                         StatusText = "Processing Backward Walking Data";
                         c.CalculateRatios("KinectData/user_" + user_id.ToString(), "BackwardWalking_vel_acc.csv", "BackwardWalking_vel_acc_and_ratios.csv");
+
+                        StatusText = "Processing Left Walking Data";
+                        c.CalculateRatios("KinectData/user_" + user_id.ToString(), "LeftWalking_vel_acc.csv", "LeftWalking_vel_acc_and_ratios.csv");
+
+                        StatusText = "Processing Right Walking Data";
+                        c.CalculateRatios("KinectData/user_" + user_id.ToString(), "RightWalking_vel_acc.csv", "RightWalking_vel_acc_and_ratios.csv");
                         
                         StatusText = "Data Processed - Please wait for reset";
                     }
