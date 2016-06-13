@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Kinect;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -14,11 +11,7 @@ namespace CIHDS_Project
 {
     public static class Extensions
     {
-        public static List<Tuple<JointType, JointType>> bones;
-        public static IDictionary<JointType, Point> jointPts;
-        private static Pen inferredBonePen = new Pen(Brushes.Gray, 1);
-        private static Pen drawingPen = new Pen(Brushes.Green, 3);
-
+        private static List<Tuple<JointType, JointType>> bones;
 
         public static ImageSource ToBitmap(this ColorFrame frame)
         {
@@ -65,15 +58,18 @@ namespace CIHDS_Project
 
                 if (trackingState == TrackingState.Tracked)
                 {
+                    // Draw skeleton Blue if Tracked
                     drawBrush = new SolidColorBrush(Color.FromArgb(128, 0, 0, 255));
                 }
                 else
                 {
+                    // And red if not
                     drawBrush = new SolidColorBrush(Color.FromArgb(128, 255, 0, 0));
                 }
 
                 if (drawBrush != null)
                 {
+                    // Draws all the nodes on the skeleton
                     canvas.DrawPoint(drawBrush, joints[jointType], cm.MapCameraPointToColorSpace(position));
                 }
 
@@ -83,7 +79,7 @@ namespace CIHDS_Project
             foreach (var bone in bones)
             {
 
-                //canvas.DrawBone(joints, bodyPts, bone.Item1, bone.Item2, new Pen()); 
+                //canvas.DrawBone(joints, bodyPts, bone.Item1, bone.Item2, new Pen());
                 ColorSpacePoint b1 = cm.MapCameraPointToColorSpace(joints[bone.Item1].Position);
                 ColorSpacePoint b2 = cm.MapCameraPointToColorSpace(joints[bone.Item2].Position);
                 if (joints[bone.Item1].TrackingState != TrackingState.NotTracked ||
@@ -97,6 +93,7 @@ namespace CIHDS_Project
         }
         public static void CreateBones(this MainWindow m)
         {
+            // Gross but The SDK did this the same way
             bones = new List<Tuple<JointType, JointType>>();
             bones.Add(new Tuple<JointType, JointType>(JointType.Head, JointType.Neck));
             bones.Add(new Tuple<JointType, JointType>(JointType.Neck, JointType.SpineShoulder));
@@ -123,7 +120,7 @@ namespace CIHDS_Project
             bones.Add(new Tuple<JointType, JointType>(JointType.AnkleLeft, JointType.FootLeft));
             bones.Add(new Tuple<JointType, JointType>(JointType.AnkleRight, JointType.FootRight));
         }
-        
+
         public static void DrawPoint(this Canvas c, Brush b, Joint j, ColorSpacePoint point)
         {
             if (j.TrackingState == TrackingState.NotTracked) return;
@@ -139,9 +136,11 @@ namespace CIHDS_Project
             float pointX = float.IsInfinity(point.X) ? 0 : point.X;
             float pointY = float.IsInfinity(point.Y) ? 0 : point.Y;
 
-            // Scaling
-            pointX = pointX / 1920.0f * (float)c.ActualWidth;
-            pointY = pointY / 1080.0f * (float)c.ActualHeight;
+
+            //pointX = pointX / 1920.0f * (float)c.ActualWidth;
+            //pointY = pointY / 1080.0f * (float)c.ActualHeight;
+            pointX = c.scaleToWidth(pointX);
+            pointY = c.scaleToHeight(pointY);
             Canvas.SetLeft(ellipse, pointX - ellipse.Width / 2);
             Canvas.SetTop(ellipse, pointY - ellipse.Height / 2);
 
@@ -149,6 +148,7 @@ namespace CIHDS_Project
 
         }
 
+        // This method Draws the skeletal "bones" for the player
         public static void DrawLine(this Canvas canvas, ColorSpacePoint first, ColorSpacePoint second, bool inferred)
         {
             if (float.IsInfinity(first.X) || float.IsInfinity(first.Y)) return;
@@ -161,18 +161,20 @@ namespace CIHDS_Project
                 X2 = float.IsInfinity(second.X) ? 0 : canvas.scaleToWidth(second.X),
                 Y2 = float.IsInfinity(second.Y) ? 0 : canvas.scaleToHeight(second.Y),
                 StrokeThickness = inferred ? 3 : 8,
-                Stroke = inferred ? new SolidColorBrush(Colors.Red) : new SolidColorBrush(Colors.CadetBlue) 
+                Stroke = inferred ? new SolidColorBrush(Colors.Red) : new SolidColorBrush(Colors.CadetBlue)
             };
             canvas.Children.Add(line);
         }
 
         private static float scaleToHeight(this Canvas c, float p)
         {
+            // Native Height Resolution is 1080 - This changes the scale to screen resolution
             return (p / 1080.0f * (float)c.ActualHeight);
         }
-        
+
         private static float scaleToWidth(this Canvas c, float p)
         {
+            // Native Width Resolution is 1080 - This changes the scale to screen resolution
             return (p / 1920.0f * (float)c.ActualWidth);
         }
     }
