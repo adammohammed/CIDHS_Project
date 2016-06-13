@@ -15,7 +15,6 @@ namespace CIHDS_Project
         int _current = 0;
 
         bool _hasEnumeratedJoints = false;
-        bool has_labeled_joints = false;
 
         public bool IsRecording { get; protected set; }
 
@@ -26,18 +25,16 @@ namespace CIHDS_Project
         public long timestamp = 0;
         public Body bd;
         public int nodes = 0;
-        public string DesktopFolder, CSVWriteDirectory;
+        public string CSVWriteDirectory;
+        private string DesktopFolder = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
 
-        public IList<int> velIndex = Enumerable.Range(76, 75).ToList();
-        public IList<int> accIndex = Enumerable.Range(151, 75).ToList();
         public IList<int> comboIndex = Enumerable.Range(0, 25).Select(x => x * 3).ToList();
         public Combinations<int> x_ratios;
-        public Combinations<int> vel_ratios;
-        public Combinations<int> acc_ratios;
         private bool combosCalculated = false;
 
         public void Start(int id)
         {
+            // This starts recording
             nodes = 0;
             IsRecording = true;
             stopwatch = new Stopwatch();
@@ -45,7 +42,6 @@ namespace CIHDS_Project
             Folder = DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
 
             Directory.CreateDirectory(Folder);
-            DesktopFolder = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
 
             CSVWriteDirectory = Path.Combine(DesktopFolder, "KinectData/user_" + id.ToString());
             Directory.CreateDirectory(CSVWriteDirectory);
@@ -53,6 +49,7 @@ namespace CIHDS_Project
 
         public void Update(Body body)
         {
+            // Call this each time you receive a new body frame in order to update CSV
             if (!IsRecording) return;
             if (body == null || !body.IsTracked) return;
 
@@ -61,7 +58,7 @@ namespace CIHDS_Project
             {
                 StringBuilder line = new StringBuilder();
                 StringBuilder notTracked = new StringBuilder();
-                StringBuilder labeler = new StringBuilder();
+                StringBuilder labeller = new StringBuilder();
 
 
                 if (!_hasEnumeratedJoints)
@@ -71,15 +68,15 @@ namespace CIHDS_Project
                     foreach (var joint in body.Joints.Values)
                     {
                         line.Append(string.Format("{0}_X,{0}_Y,{0}_Z", joint.JointType.ToString()));
-                        labeler.Append(string.Format("{0}", joint.JointType.ToString()));
+                        labeller.Append(string.Format("{0}", joint.JointType.ToString()));
                         if (joint.JointType.ToString() != JointType.ThumbRight.ToString())
                         {
                             line.Append(',');
-                            labeler.Append(",");
+                            labeller.Append(",");
                         }
                         nodes++;
                     }
-                    line.Append("," + labeler);
+                    line.Append("," + labeller);
                     line.AppendLine();
 
                     _hasEnumeratedJoints = true;
@@ -108,21 +105,22 @@ namespace CIHDS_Project
             _current++;
         }
 
-        public void Stop(string s = null)
+        public void Stop(string outputFile = null)
         {
+            // Consolidates teh multiple .line files created into a CSV File 
+
             IsRecording = false;
             _hasEnumeratedJoints = false;
-            has_labeled_joints = false;
 
             stopwatch.Stop();
 
-            if (s == null)
+            if (outputFile == null)
             {
                 Result = DateTime.Now.ToString("yyy_MM_dd_HH_mm_ss") + ".csv";
             }
             else
             {
-                Result = s + ".csv";
+                Result = outputFile + ".csv";
             }
 
             Result = Path.Combine(CSVWriteDirectory, Result);
@@ -132,7 +130,6 @@ namespace CIHDS_Project
                 for (int index = 0; index < _current; index++)
                 {
                     string path = Path.Combine(Folder, index.ToString() + ".line");
-                    string path_tracked = Path.Combine(Folder, index.ToString() + "_tracked_state.line");
 
                     if (File.Exists(path))
                     {
@@ -147,29 +144,34 @@ namespace CIHDS_Project
                 }
             }
 
-            calculateDerivatives(bd, Result, Path.Combine(CSVWriteDirectory, s + "_vel.csv"), nodes, 0);
-            calculateDerivatives(bd, Path.Combine(CSVWriteDirectory, s + "_vel.csv"), Path.Combine(CSVWriteDirectory, s + "_vel_acc.csv"), nodes, nodes * 3 + 25);
+            // Takes raw data file and adds node velocity in each coordinate axis
+            calculateDerivatives(bd, Result, Path.Combine(CSVWriteDirectory, outputFile + "_vel.csv"), nodes, 0);
+            
+            // Takes the velocity file and adds node acceleration in each coordinate axis
+            calculateDerivatives(bd, Path.Combine(CSVWriteDirectory, outputFile + "_vel.csv"), Path.Combine(CSVWriteDirectory, outputFile + "_vel_acc.csv"), nodes, nodes * 3 + 25);
+            
+            // Gets rid of the .line folder 
             Directory.Delete(Folder, true);
         }
 
-        private void calculateDerivatives(Body b, string InFile, string OutFile, int nodes, int offset)
+        private void calculateDerivatives(Body b, string inFile, string outFile, int nodes, int offset)
         {
-            using (StreamReader sr = new StreamReader(InFile))
+            using (StreamReader sr = new StreamReader(inFile))
             {
                 String HeaderLine = sr.ReadLine();
                 StringBuilder newLines = new StringBuilder();
-                using (StreamWriter s = new StreamWriter(OutFile))
+                using (StreamWriter s = new StreamWriter(outFile))
                 {
                     newLines.Append(",");
                     foreach (var joint in b.Joints.Values)
                     {
                         if (offset == 0)
                         {
-                            newLines.Append(string.Format("{0}_Xvel,{0}_Yvel,{0}_Zvel", joint.JointType));
+                            newLines.Append(string.Format("{0}_Xvel,{0}_Yvel,{0}_Zvel", joint.JointType.ToString()));
                         }
                         else
                         {
-                            newLines.Append(string.Format("{0}_Xacc,{0}_Yacc,{0}_Zacc", joint.JointType));
+                            newLines.Append(string.Format("{0}_Xacc,{0}_Yacc,{0}_Zacc", joint.JointType.ToString()));
                         }
                         if (joint.JointType != JointType.ThumbRight)
                         {
@@ -237,20 +239,23 @@ namespace CIHDS_Project
         public void CalculateRatios(string pathToDataFolder, string DataSheet, string outputFile)
         {
             string[] nodes;
+            // is the index of the ThumbRightZ Tracking cell in the csv
+            // 1 - Timestamp
+            // 2 - 76  -> Node X, Node Y, Node Z for the of 25 nodes 
+            // 76 - 101 -> Node Tracking state for the 25 nodes
+            // Later this should be found by reading the file
             int velocityIndex = 101;
-            // Constants
+            
+            // comboIndex holds all indicies for X positional nodes (e.g. 0, 3, 6, .. , 72)
+            // All the possible pairs are found using Combinatorics Library from NuGet
             if (!combosCalculated)
             {
-                x_ratios = new Combinations<int>(comboIndex, 2);
-
-                //vel_ratios = new Combinations<int>(velIndex, 2);
-                //acc_ratios = new Combinations<int>(accIndex, 2);
+                x_ratios = new Combinations<int>(comboIndex, 2); 
                 combosCalculated = true;
             }
-
-            string DesktopFolder = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+            
             string userFolder = Path.Combine(DesktopFolder, pathToDataFolder);
-            // End of constants
+
             using (StreamReader sr = new StreamReader(Path.Combine(userFolder, DataSheet)))
             {
                 // Write Header
@@ -305,7 +310,10 @@ namespace CIHDS_Project
                         s.Append(instance + ',');
                         string[] data = new ArraySegment<string>(instance.Split(','), velocityIndex, 150).ToArray();
 
-                        // Velocity Combinations
+                        // Ratios between pairs
+                        // Ratios only done in the same axis (e.g. NeckX/SpineMidX or NeckZ/SpineMidZ)
+                        // 0 or (2) Offset gets each X or Z Pair
+                        // +75 + (0 or 2) acceleration X or Z Pairs
                         for (int j = 0; j < 4; j++)
                         {
                             int offset = 0;
@@ -316,11 +324,14 @@ namespace CIHDS_Project
 
                             foreach (var v in x_ratios)
                             {
-                                // 76 + j*2 results in +76 for x velocities and + 78 for Z velocities
                                 s.Append(float.Parse(data[v[0] + offset]) / float.Parse(data[v[1] + offset]));
-                                //if (v[0] != comboIndex[comboIndex.Count - 2] && offset != 76 + 75 + 2) {
-                                s.Append(',');
-                                //}
+                                if(j != 3)
+                                {
+                                    s.Append(',');
+                                }
+                                else if (v[0] != comboIndex[comboIndex.Count - 2] && j == 3) {
+                                    s.Append(',');
+                                }
                             }
                         }
                     }
