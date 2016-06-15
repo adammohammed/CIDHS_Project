@@ -32,7 +32,7 @@ namespace CIHDS_Project
         public Combinations<int> x_ratios;
         private bool combosCalculated = false;
 
-        public void Start(int id)
+        public void Start(string date)
         {
             // This starts recording
             nodes = 0;
@@ -40,10 +40,10 @@ namespace CIHDS_Project
             stopwatch = new Stopwatch();
             stopwatch.Start();
             Folder = DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
-
+            
             Directory.CreateDirectory(Folder);
 
-            CSVWriteDirectory = Path.Combine(DesktopFolder, "KinectData/user_" + id.ToString());
+            CSVWriteDirectory = Path.Combine(DesktopFolder, "KinectData/user_" + date);
             Directory.CreateDirectory(CSVWriteDirectory);
         }
 

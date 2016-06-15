@@ -57,6 +57,7 @@ namespace CIHDS_Project
         private static float positionX;
         private static bool data_processed = false;
         private static string outputName;
+        private static string currentUser;
         
         public static void RunGame(Body b)
         {
@@ -80,7 +81,7 @@ namespace CIHDS_Project
                 outputName = stateNames[(int)gameState];
                 if (!c.IsRecording)
                 {
-                    c.Start(user_id);
+                    c.Start(currentUser);
                 }
                 else
                 {
@@ -107,9 +108,11 @@ namespace CIHDS_Project
                     data_processed = false;
                     if(rhand > topSpine && lhand > topSpine)
                     {
+                        
                         count++;
                         if(count > 50)
                         {
+                            currentUser = DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
                             gameState = GameState.Calibrating;
                             count = 0;
                         }
@@ -153,10 +156,10 @@ namespace CIHDS_Project
                     
                     if(shoulder.Z < upperWalkingThreshold && shoulder.Z > lowerWalkingThreshold)
                     {
-                        StatusText = "Stop!";
+                        StatusText = "Stop Right There!";
                         if(shoulder.Z < upperPositionThreshold)
                         count++;
-                        if (count > 5)
+                        if (count > 30)
                         {
                             count = 0;
                             c.Stop(outputName);
@@ -193,7 +196,7 @@ namespace CIHDS_Project
                     break;
 
                 case GameState.LeftWalk:
-                    StatusText = "Turn left and walk around 5 ft";
+                    StatusText = "Turn left and walk - ";
                     if(positionX > leftDistance+thresholdValue)
                     {
                         StatusText += positionX.ToString() ;
@@ -204,7 +207,7 @@ namespace CIHDS_Project
                     {
                         StatusText = "Stop Right There";
                         count++;
-                        if(count > 50)
+                        if(count > 30)
                         {
                             count = 0;
                             c.Stop(outputName);
@@ -219,7 +222,7 @@ namespace CIHDS_Project
                     break;
 
                 case GameState.RightWalk:
-                    StatusText = "Turn right and walk around 5 ft";
+                    StatusText = "Turn right and walk - ";
                     if(positionX < rightDistance - thresholdValue)
                     {
                         StatusText += positionX.ToString() ;
@@ -230,7 +233,7 @@ namespace CIHDS_Project
                     {
                         StatusText = "Stop Right There!";
                         count++;
-                        if(count > 50)
+                        if(count > 30)
                         {
                             count = 0;
                             c.Stop(outputName);
@@ -251,19 +254,19 @@ namespace CIHDS_Project
                     {
                         data_processed = true;
                         StatusText = "Processing Calibration Data";
-                        c.CalculateRatios("KinectData/user_" + user_id.ToString(), "Calibrating_vel_acc.csv", "Calibrating_vel_acc_and_ratios.csv");
+                        c.CalculateRatios("KinectData/user_" + currentUser, "Calibrating_vel_acc.csv", "Calibrating_vel_acc_and_ratios.csv");
 
                         StatusText = "Processing Forward Walking Data";
-                        c.CalculateRatios("KinectData/user_" + user_id.ToString(), "ForwardWalking_vel_acc.csv", "ForwardWalking_vel_acc_and_ratios.csv");
+                        c.CalculateRatios("KinectData/user_" + currentUser, "ForwardWalking_vel_acc.csv", "ForwardWalking_vel_acc_and_ratios.csv");
 
                         StatusText = "Processing Backward Walking Data";
-                        c.CalculateRatios("KinectData/user_" + user_id.ToString(), "BackwardWalking_vel_acc.csv", "BackwardWalking_vel_acc_and_ratios.csv");
+                        c.CalculateRatios("KinectData/user_" + currentUser, "BackwardWalking_vel_acc.csv", "BackwardWalking_vel_acc_and_ratios.csv");
 
                         StatusText = "Processing Left Walking Data";
-                        c.CalculateRatios("KinectData/user_" + user_id.ToString(), "LeftWalking_vel_acc.csv", "LeftWalking_vel_acc_and_ratios.csv");
+                        c.CalculateRatios("KinectData/user_" + currentUser, "LeftWalking_vel_acc.csv", "LeftWalking_vel_acc_and_ratios.csv");
 
                         StatusText = "Processing Right Walking Data";
-                        c.CalculateRatios("KinectData/user_" + user_id.ToString(), "RightWalking_vel_acc.csv", "RightWalking_vel_acc_and_ratios.csv");
+                        c.CalculateRatios("KinectData/user_" + currentUser, "RightWalking_vel_acc.csv", "RightWalking_vel_acc_and_ratios.csv");
                         
                         StatusText = "Data Processed - Please wait for reset";
                     }
