@@ -5,6 +5,8 @@ using System.Windows.Media;
 using Microsoft.Kinect;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 
 namespace CIHDS_Project
 {
@@ -23,10 +25,16 @@ namespace CIHDS_Project
         private bool canvasSized = false;
         private Stopwatch s = new Stopwatch();
         private Config c;
+        string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         #region Constructor
         public MainWindow()
         {
+            List<Assembly> allAssemblies = new List<Assembly>();
+            string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            foreach (string dll in Directory.GetFiles(path, "*.dll"))
+                allAssemblies.Add(Assembly.LoadFile(dll));
             InitializeComponent();
         }
         #endregion Constructor
