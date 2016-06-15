@@ -21,6 +21,7 @@ namespace CIHDS_Project
         int id = 0;
         private bool canvasSized = false;
         private Stopwatch s = new Stopwatch();
+        private Config c;
 
         #region Constructor
         public MainWindow()
@@ -34,6 +35,11 @@ namespace CIHDS_Project
         {
             sensor = KinectSensor.GetDefault();
 
+            c = new Config();
+            c.LRDist_float = Game.rightDistance;
+            c.FDist_float = Game.forwardDistance;
+            c.StartDist_float = Game.backwardDistance;
+            c.Show();
             this.stepBtn.Click += StepBtn_Click;
             if(sensor != null)
             {
@@ -99,8 +105,15 @@ namespace CIHDS_Project
                             if(body.IsTracked)
                             {
                                 canvas.DrawSkeleton(body.Joints, p, this.cm);
-
+                                if(Game.gameState == Game.GameState.Begin)
+                                {
+                                    Game.backwardDistance = c.StartDist_float;
+                                    Game.forwardDistance = c.FDist_float;
+                                    Game.leftDistance = -1.0f * c.LRDist_float;
+                                    Game.rightDistance = 1.0f * c.LRDist_float;
+                                }
                                 Game.RunGame(body);             // Game.cs Entry Point
+                                
                             } // if body is tracked
                         } // if body null
                     } //foreach

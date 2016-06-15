@@ -31,22 +31,23 @@ namespace CIHDS_Project
 
         //Start Position for fwd walking stage
         //Ending Position for backward walking stage
-        private static float backwardDistance = 2.4f;
+        public static float backwardDistance = 2.5f;
         private static float lowerPositionThreshold = backwardDistance - thresholdValue;
+                    
         private static float upperPositionThreshold = backwardDistance + thresholdValue;
 
 
         // Finish position for walking forward
         // Start Position for walking backward
-        private static float forwardDistance = 1.0f;
+        public static float forwardDistance = 1.0f;
         private static float lowerWalkingThreshold = forwardDistance - thresholdValue;
         private static float upperWalkingThreshold = forwardDistance + thresholdValue;
 
         // Left walking distance
-        private static float leftDistance = -0.55f;
+        public static float leftDistance = -0.80f;
 
         // Right walking distance
-        private static float rightDistance = 0.55f;
+        public static float rightDistance = 0.80f;
 
 
         private static CSVLogger c = new CSVLogger();
@@ -96,6 +97,13 @@ namespace CIHDS_Project
                     float rhand = joints[JointType.HandRight].Position.Y;
                     float lhand = joints[JointType.HandLeft].Position.Y;
                     float topSpine = joints[JointType.SpineShoulder].Position.Y;
+                    
+                    upperPositionThreshold = backwardDistance + thresholdValue;
+                    lowerPositionThreshold = backwardDistance - thresholdValue;
+
+                    lowerWalkingThreshold = forwardDistance - thresholdValue;
+                    upperWalkingThreshold = forwardDistance + thresholdValue;
+
                     data_processed = false;
                     if(rhand > topSpine && lhand > topSpine)
                     {
