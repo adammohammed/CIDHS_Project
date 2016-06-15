@@ -16,6 +16,7 @@ namespace CIHDS_Project
         public bool ValidLRDistance = false;
         public bool ValidFDistance = false;
         public bool ValidStartDistance = false;
+        public bool VideoEnabled = true;
         private float minStart = 1.5f;
         private float maxStart = 3.5f;
         private float minFwd = 0.5f;
@@ -133,6 +134,10 @@ namespace CIHDS_Project
                 this.StartDist_float = float.Parse(this.StartPositionConfig.Text);
                 this.FDist_float = float.Parse(this.ForwardDistanceConfig.Text);
                 this.LRDist_float = float.Parse(this.LeftRightDistanceConfig.Text);
+                if (this.VideoStreamEnabled.IsChecked.HasValue)
+                {
+                    VideoEnabled = (bool)this.VideoStreamEnabled.IsChecked;
+                }
                 if ((StartDist_float - FDist_float) < 0.8f)
                 {
                     MessageBox.Show("Start Distance - Forward Distance Must be greater than 0.8m");

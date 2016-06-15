@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CIHDS_Project"
         mc:Ignorable="d"
-        Title="Config" Height="300" Width="300" Loaded="ConfigWindow_Loaded" ResizeMode="NoResize">
+        Title="Config" Height="400" Width="400" Loaded="ConfigWindow_Loaded" ResizeMode="NoResize">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="52*"/>
@@ -41,6 +41,7 @@
         <TextBlock x:Name="textBlock" Margin="0" TextWrapping="Wrap" Grid.Row="1" Grid.ColumnSpan="4" HorizontalAlignment="Center" VerticalAlignment="Center"><Run Text="Starting Position:   Min: 1.0m    Max: 3.5m"/><LineBreak/><Run/><LineBreak/><Run Text="Distances"/><LineBreak/><Run Text="Forward: &#x9;Min: 0.5m    Max: 2.0m"/><LineBreak/><Run Text="Left/Right: &#x9;Min: 0.5m    Max 1.5m"/></TextBlock>
         <Button x:Name="saveBtn" Content="Save" Margin="5,13.04,3,10" Style="{DynamicResource SimpleButton}" Grid.Row="2" d:LayoutOverrides="Height" Grid.Column="2" Click="saveBtn_Clicked"/>
         <Button x:Name="cancelBtn" Content="Cancel" Margin="6,10,10,13.04" Style="{DynamicResource SimpleButton}" Grid.Row="2" d:LayoutOverrides="Height" Grid.Column="1" Click="cancelBtn_Clicked"/>
+        <CheckBox x:Name="VideoStreamEnabled" Content="Video Stream" Grid.Column="1" HorizontalAlignment="Center" Margin="37,117,0,0" Grid.Row="1" VerticalAlignment="Center" Height="19" Grid.ColumnSpan="2" IsChecked="True"/>
 
     </Grid>
 </Window>

@@ -18,6 +18,7 @@ namespace CIHDS_Project
         IList<Body> bodies;
         CoordinateMapper cm;
         bool setup = false;
+        bool VidEnabled = true;
         int id = 0;
         private bool canvasSized = false;
         private Stopwatch s = new Stopwatch();
@@ -57,7 +58,7 @@ namespace CIHDS_Project
 
         private void StepBtn_Click(object sender, RoutedEventArgs e)
         {
-            Game.setUserId(++id);
+            Game.gameState = Game.GameState.Begin;
         }
 
         private void Reader_FrameArrived(object sender, MultiSourceFrameArrivedEventArgs e)
@@ -65,6 +66,9 @@ namespace CIHDS_Project
             var refFrame = e.FrameReference.AcquireFrame();
 
             // update the video stream
+
+            VidEnabled = this.c.VideoEnabled;
+
             using(var frame = refFrame.ColorFrameReference.AcquireFrame())
             {
                 if(frame != null)
@@ -75,7 +79,10 @@ namespace CIHDS_Project
                         this.canvas.Height = this.Height;
                         setup = true; 
                     }
-                    camera.Source = frame.ToBitmap();
+                    if (VidEnabled)
+                    {
+                        camera.Source = frame.ToBitmap();
+                    }
                     if (!canvasSized)
                     {
                         this.canvas.Width = camera.Width;
