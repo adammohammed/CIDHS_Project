@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System;
 using System.Diagnostics;
+using System.Linq;
 
 namespace CIHDS_Project
 {
@@ -11,7 +12,6 @@ namespace CIHDS_Project
 
         public static string StatusText = "Raise your hands above your shoulders to play!";
         public enum GameState : int { Begin, Calibrating, FwdWalk, BwdWalk, LeftWalk, RightWalk, SaveData, Finish};
-        public static GameState gameState = GameState.Begin;
         public static string[] stateNames = {
             "Begin",
             "Calibrating",
@@ -22,6 +22,9 @@ namespace CIHDS_Project
             "SaveData",
             "Finished",
         };
+        public static GameState[] recordables = { GameState.Calibrating, GameState.FwdWalk, GameState.BwdWalk, GameState.LeftWalk, GameState.RightWalk};
+        public static GameState gameState = GameState.Begin;
+
         public static int user_id = 0;
 
         private static int count = 0;
@@ -67,6 +70,7 @@ namespace CIHDS_Project
             shoulder = joints[JointType.ShoulderLeft].Position;
             head = joints[JointType.Head].Position;
             positionX = head.X;
+            bool recordFrame = recordables.Contains(gameState);
 
             // Clamp down if the Z axis numbers are not real
             if (shoulder.Z < 0)
@@ -74,18 +78,13 @@ namespace CIHDS_Project
                 shoulder.Z = 0.1f;
             }
             // Start recording if in any of these states
-            if (gameState == GameState.Calibrating || gameState == GameState.FwdWalk ||
-                gameState == GameState.BwdWalk || gameState == GameState.LeftWalk ||
-                gameState == GameState.RightWalk)
+
+            if (recordFrame)
             {
                 outputName = stateNames[(int)gameState];
                 if (!c.IsRecording)
                 {
                     c.Start(currentUser);
-                }
-                else
-                {
-                    c.Update(b);
                 }
             }
 
@@ -154,6 +153,9 @@ namespace CIHDS_Project
                 case GameState.FwdWalk:
                     StatusText = "Move forward slowly";
                     
+                    // Check to see if between start and end position
+                    if(shoulder.Z > backwardDistance || shoulder.Z < forwardDistance) recordFrame = false;
+
                     if(shoulder.Z < upperWalkingThreshold && shoulder.Z > lowerWalkingThreshold)
                     {
                         StatusText = "Stop Right There!";
@@ -171,6 +173,10 @@ namespace CIHDS_Project
                 // Backward Walk - Asks Player to return to starting location
                 case GameState.BwdWalk:
                     StatusText = "Walk back to the start";
+
+                    // Check to see if between start/end position
+                    if (shoulder.Z > backwardDistance || shoulder.Z < forwardDistance) recordFrame = false;
+                    
                     if(shoulder.Z > upperPositionThreshold)
                     {
                         StatusText = StatusText + " - move forward";
@@ -197,6 +203,9 @@ namespace CIHDS_Project
 
                 case GameState.LeftWalk:
                     StatusText = "Turn left and walk - ";
+                    // Check to see if between start/end position
+                    if (positionX > 0 || positionX < leftDistance) recordFrame = false;
+                    
                     if(positionX > leftDistance+thresholdValue)
                     {
                         StatusText += positionX.ToString() ;
@@ -223,6 +232,9 @@ namespace CIHDS_Project
 
                 case GameState.RightWalk:
                     StatusText = "Turn right and walk - ";
+                    
+                    if (positionX < 0 || positionX > rightDistance) recordFrame = false;
+
                     if(positionX < rightDistance - thresholdValue)
                     {
                         StatusText += positionX.ToString() ;
@@ -293,6 +305,11 @@ namespace CIHDS_Project
                 case GameState.Finish:
                     StatusText = "Thank You for Playing!";
                     break;
+            }
+
+            if (recordFrame && c.IsRecording)
+            {
+                c.Update(b);
             }
 
         }
