@@ -8,40 +8,41 @@
         Title="Config" Height="400" Width="400" Loaded="ConfigWindow_Loaded" ResizeMode="NoResize">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="52*"/>
-            <ColumnDefinition Width="91*"/>
-            <ColumnDefinition Width="83*"/>
-            <ColumnDefinition Width="66*"/>
+            <ColumnDefinition Width="70*"/>
+            <ColumnDefinition Width="123*"/>
+            <ColumnDefinition Width="128*"/>
+            <ColumnDefinition Width="73*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="124*"/>
-            <RowDefinition Height="104*"/>
-            <RowDefinition Height="41*"/>
+            <RowDefinition Height="168*"/>
+            <RowDefinition Height="141*"/>
+            <RowDefinition Height="62*"/>
         </Grid.RowDefinitions>
-        <Grid x:Name="Grid_Config" Margin="21,20,21,-2.12" MinWidth="250" MinHeight="100" HorizontalAlignment="Center" d:LayoutOverrides="Height" Grid.ColumnSpan="4">
+        <Grid x:Name="Grid_Config" Margin="0,20,1,0" MinWidth="250" MinHeight="100" HorizontalAlignment="Center" Grid.ColumnSpan="2" Grid.Column="1" Width="250">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="113*"/>
                 <ColumnDefinition Width="87*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="12*"/>
-                <RowDefinition Height="14*"/>
-                <RowDefinition Height="15*"/>
+                <RowDefinition Height="60*"/>
+                <RowDefinition Height="58*"/>
+                <RowDefinition Height="60*"/>
             </Grid.RowDefinitions>
-            <Label x:Name="Starting_Distance" Content="Starting Position" Margin="0,0,-0.001,-0.002" d:LayoutOverrides="Width, Height, LeftMargin, RightMargin, TopMargin, BottomMargin"/>
-            <Label x:Name="Forward_Distance" Content="Forward Distance" Margin="0,0,-0.001,0" Grid.Row="1" d:LayoutOverrides="Width, Height, LeftMargin, RightMargin, TopMargin, BottomMargin"/>
-            <Label x:Name="LeftRight_Distance" Content="Left/Right Distance" Margin="0,0,11.143,0" Grid.Row="2" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
-            <Label x:Name="meter" Content="meters" Margin="31.717,0,0,-0.002" Grid.Column="1" d:LayoutOverrides="Height, LeftMargin, RightMargin, TopMargin, BottomMargin" Width="46" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-            <TextBox x:Name="StartPositionConfig" Margin="15,5.655,32.94,5.653" TextWrapping="Wrap" Text="3.85" Grid.Column="1" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" Width="30" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="30" MaxHeight="20"/>
-            <TextBox x:Name="ForwardDistanceConfig" Margin="15,8.093,32.94,8.094" TextWrapping="Wrap" Text="3.85" Grid.Column="1" Grid.Row="1" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" Width="30" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="30" MaxHeight="20"/>
-            <TextBox x:Name="LeftRightDistanceConfig" Margin="15,9.312,32.94,9.313" TextWrapping="Wrap" Text="3.85" Grid.Column="1" Grid.Row="2" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" Width="30" Height="20" MaxWidth="30" MaxHeight="20" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-            <Label x:Name="meter_Copy" Content="meters" Margin="31.717,0,0,0" Grid.Column="1" Grid.Row="1" d:LayoutOverrides="Height, LeftMargin, RightMargin, TopMargin, BottomMargin" Width="46" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-            <Label x:Name="meter_Copy1" Content="meters" Margin="31.717,-0.002,0,0" Grid.Column="1" Grid.Row="2" d:LayoutOverrides="Height, LeftMargin, RightMargin, TopMargin, BottomMargin" Width="46" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+            <Label x:Name="Starting_Distance" Content="Starting Position" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="97"/>
+            <Label x:Name="StartRange" Content="min: max:" Grid.Column="0" Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="10" Padding="5,0,5,10"/>
+            <Label x:Name="Forward_Distance" Content="Forward Distance" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="102"/>
+            <Label x:Name="LeftRight_Distance" Content="Left/Right Distance" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="111"/>
+            <Label x:Name="meter" Content="meters" Grid.Column="1" Width="46" HorizontalAlignment="Right" VerticalAlignment="Top" Height="26"/>
+            <TextBox x:Name="StartPositionConfig" Margin="31,6,48,0" TextWrapping="Wrap" Text="3.85" Grid.Column="1" Width="30" Height="20" VerticalAlignment="Top" HorizontalAlignment="Center" MaxWidth="30" MaxHeight="20"/>
+            <TextBox x:Name="ForwardDistanceConfig" Margin="31,8,48,0" TextWrapping="Wrap" Text="3.85" Grid.Column="1" Grid.Row="1" Width="30" Height="20" VerticalAlignment="Top" HorizontalAlignment="Center" MaxWidth="30" MaxHeight="20"/>
+            <TextBox x:Name="LeftRightDistanceConfig" Margin="31,9,48,0" TextWrapping="Wrap" Text="3.85" Grid.Column="1" Grid.Row="2" Width="30" Height="20" MaxWidth="30" MaxHeight="20" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+            <Label x:Name="meter_Copy" Content="meters" Margin="0" Grid.Column="1" Grid.Row="1" Width="46" HorizontalAlignment="Right" VerticalAlignment="Top" Height="26"/>
+            <Label x:Name="meter_Copy1" Content="meters" Grid.Column="1" Grid.Row="2" Width="46" HorizontalAlignment="Right" VerticalAlignment="Top" Height="26"/>
+            <Label x:Name="FwdRange" Content="min: max:" Grid.Column="0" Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="10" Padding="5,0,5,10" />
+            <Label x:Name="LRRange" Content="min: max:" Grid.Column="0" Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="10" Padding="5,0,5,10" />
         </Grid>
-        <TextBlock x:Name="textBlock" Margin="0" TextWrapping="Wrap" Grid.Row="1" Grid.ColumnSpan="4" HorizontalAlignment="Center" VerticalAlignment="Center"><Run Text="Starting Position:   Min: 1.0m    Max: 3.5m"/><LineBreak/><Run/><LineBreak/><Run Text="Distances"/><LineBreak/><Run Text="Forward: &#x9;Min: 0.5m    Max: 2.0m"/><LineBreak/><Run Text="Left/Right: &#x9;Min: 0.5m    Max 1.5m"/></TextBlock>
-        <Button x:Name="saveBtn" Content="Save" Margin="5,13.04,3,10" Style="{DynamicResource SimpleButton}" Grid.Row="2" d:LayoutOverrides="Height" Grid.Column="2" Click="saveBtn_Clicked"/>
-        <Button x:Name="cancelBtn" Content="Cancel" Margin="6,10,10,13.04" Style="{DynamicResource SimpleButton}" Grid.Row="2" d:LayoutOverrides="Height" Grid.Column="1" Click="cancelBtn_Clicked"/>
-        <CheckBox x:Name="VideoStreamEnabled" Content="Video Stream" Grid.Column="1" HorizontalAlignment="Center" Margin="37,117,0,0" Grid.Row="1" VerticalAlignment="Center" Height="19" Grid.ColumnSpan="2" IsChecked="True"/>
-
+        <Button x:Name="saveBtn" Content="Save" Margin="5,13,3,10" Style="{DynamicResource SimpleButton}" Grid.Row="2" Grid.Column="2" Click="saveBtn_Clicked"/>
+        <Button x:Name="cancelBtn" Content="Cancel" Margin="6,10,10,13" Style="{DynamicResource SimpleButton}" Grid.Row="2" Grid.Column="1" Click="cancelBtn_Clicked"/>
+        <CheckBox x:Name="VideoStreamEnabled" Content="Video Stream" Grid.Column="1" HorizontalAlignment="Center" Margin="94,124,65,61" Grid.Row="1" VerticalAlignment="Center" Height="18" Grid.ColumnSpan="2" IsChecked="True" Width="92" Grid.RowSpan="2"/>
     </Grid>
 </Window>

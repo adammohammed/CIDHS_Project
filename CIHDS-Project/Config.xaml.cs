@@ -18,11 +18,11 @@ namespace CIHDS_Project
         public bool ValidStartDistance = false;
         public bool VideoEnabled = true;
         private float minStart = 1.5f;
-        private float maxStart = 3.5f;
+        private float maxStart = 5.5f;
         private float minFwd = 0.5f;
         private float maxFwd = 2.0f;
         private float minLR = 0.5f;
-        private float maxLR = 1.5f;
+        private float maxLR = 2.0f;
         private Brush badInput = new SolidColorBrush(Color.FromArgb(130, 255, 0, 0));
         private Brush goodInput = new SolidColorBrush(Colors.White);
 
@@ -31,6 +31,9 @@ namespace CIHDS_Project
             InitializeComponent();
             this.StartPositionConfig.TextChanged += StartPositionConfig_TextChanged;
             this.ForwardDistanceConfig.TextChanged += ForwardDistanceConfig_TextChanged;
+            this.StartRange.Content = string.Format("Min: {0}m    Max: {1}m", minStart, maxStart);
+            this.FwdRange.Content = string.Format("Min: {0}m    Max: {1}m", minFwd, maxFwd);
+            this.LRRange.Content = string.Format("Min: {0}m    Max: {1}m", minLR, maxLR);
         }
 
         private void ConfigWindow_Loaded(object sender, RoutedEventArgs e)
