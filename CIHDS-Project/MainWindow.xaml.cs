@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows;
-using System.Windows.Media;
-using Microsoft.Kinect;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using Microsoft.Kinect;
 using System.Reflection;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace CIHDS_Project
 {
@@ -47,8 +48,8 @@ namespace CIHDS_Project
             c.LRDist_float = Game.rightDistance;
             c.FDist_float = Game.forwardDistance;
             c.StartDist_float = Game.backwardDistance;
-            c.Show();
             this.stepBtn.Click += StepBtn_Click;
+            this.KeyDown += MainWindow_KeyDown;
             if(sensor != null)
             {
                 sensor.Open();
@@ -61,6 +62,14 @@ namespace CIHDS_Project
                     this.CreateBones();
                 }
             } 
+        }
+
+        private void MainWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.C)
+            {
+                c.Show();
+            }
         }
 
         private void StepBtn_Click(object sender, RoutedEventArgs e)

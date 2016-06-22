@@ -10,7 +10,7 @@ namespace CIHDS_Project
     {
 
 
-        public static string StatusText = "Raise your hands above your shoulders to play!";
+        public static string StatusText = "Put your arms in the air to play!";
         public enum GameState : int { Begin, Calibrating, FwdWalk, BwdWalk, LeftWalk, RightWalk, SaveData, Finish};
         public static string[] stateNames = {
             "Begin",
