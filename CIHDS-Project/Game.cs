@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace CIHDS_Project
 {
-    public static class Game
+    static class Game
     {
 
 
@@ -22,42 +22,40 @@ namespace CIHDS_Project
             "SaveData",
             "Finished",
         };
-        public static GameState[] recordables = { GameState.Calibrating, GameState.FwdWalk, GameState.BwdWalk, GameState.LeftWalk, GameState.RightWalk};
         public static GameState gameState = GameState.Begin;
 
-        public static int user_id = 0;
+        // Start position / BwdWalk End Position
+        public static float backwardDistance = 2.5f;
 
-        private static int count = 0;
+        // Forward Walking end position
+        public static float forwardDistance = 1.0f;
+        
+        // Left walking end position
+        public static float leftDistance = -0.80f;
 
+        // Right walking end position
+        public static float rightDistance = 0.80f;
+
+
+        private static GameState[] recordables = { GameState.Calibrating, GameState.FwdWalk, GameState.BwdWalk, GameState.LeftWalk, GameState.RightWalk}; 
+        
         // Checkpoint threshold distance (in meters)
         private static float thresholdValue = 0.20f;
 
-        //Start Position for fwd walking stage
+        //Start Position for fwd walking stage with buffer
         //Ending Position for backward walking stage
-        public static float backwardDistance = 2.5f;
-        private static float lowerPositionThreshold = backwardDistance - thresholdValue;
-                    
+        private static float lowerPositionThreshold = backwardDistance - thresholdValue; 
         private static float upperPositionThreshold = backwardDistance + thresholdValue;
 
 
         // Finish position for walking forward
         // Start Position for walking backward
-        public static float forwardDistance = 1.0f;
         private static float lowerWalkingThreshold = forwardDistance - thresholdValue;
         private static float upperWalkingThreshold = forwardDistance + thresholdValue;
-
-        // Left walking distance
-        public static float leftDistance = -0.80f;
-
-        // Right walking distance
-        public static float rightDistance = 0.80f;
-
+ 
+        private static int count = 0;
 
         private static CSVLogger c = new CSVLogger();
-        private static IReadOnlyDictionary<JointType, Joint> joints;
-        private static CameraSpacePoint shoulder;
-        private static CameraSpacePoint head;
-        private static float positionX;
         private static bool data_processed = false;
         private static string outputName;
         private static string currentUser;
@@ -65,11 +63,12 @@ namespace CIHDS_Project
         public static void RunGame(Body b)
         {
 
-            joints = b.Joints;
+            IReadOnlyDictionary<JointType, Joint> joints = b.Joints;
 
-            shoulder = joints[JointType.ShoulderLeft].Position;
-            head = joints[JointType.Head].Position;
-            positionX = head.X;
+            CameraSpacePoint shoulder = joints[JointType.ShoulderLeft].Position;
+            CameraSpacePoint head = joints[JointType.Head].Position;
+            float positionX = head.X;
+
             bool recordFrame = recordables.Contains(gameState);
 
             // Clamp down if the Z axis numbers are not real
@@ -288,7 +287,6 @@ namespace CIHDS_Project
                     {
                         if (count == 150)
                         {
-                            user_id++;
                             gameState = GameState.Begin;
                         }
                         else
@@ -316,7 +314,6 @@ namespace CIHDS_Project
 
         public static void setUserId(int id)
         {
-            user_id = id;
             gameState = GameState.Begin;
             StatusText = "Put your arms in the air to play!";
         }

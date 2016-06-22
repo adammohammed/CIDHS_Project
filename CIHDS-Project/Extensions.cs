@@ -9,7 +9,7 @@ using System.Windows.Shapes;
 
 namespace CIHDS_Project
 {
-    public static class Extensions
+    static class Extensions
     {
         private static List<Tuple<JointType, JointType>> bones;
 
@@ -91,6 +91,7 @@ namespace CIHDS_Project
             }
 
         }
+        
         public static void CreateBones(this MainWindow m)
         {
             // Gross but The SDK did this the same way
@@ -121,7 +122,7 @@ namespace CIHDS_Project
             bones.Add(new Tuple<JointType, JointType>(JointType.AnkleRight, JointType.FootRight));
         }
 
-        public static void DrawPoint(this Canvas c, Brush b, Joint j, ColorSpacePoint point)
+        static void DrawPoint(this Canvas c, Brush b, Joint j, ColorSpacePoint point)
         {
             if (j.TrackingState == TrackingState.NotTracked) return;
             Ellipse ellipse = new Ellipse
@@ -149,7 +150,7 @@ namespace CIHDS_Project
         }
 
         // This method Draws the skeletal "bones" for the player
-        public static void DrawLine(this Canvas canvas, ColorSpacePoint first, ColorSpacePoint second, bool inferred)
+        private static void DrawLine(this Canvas canvas, ColorSpacePoint first, ColorSpacePoint second, bool inferred)
         {
             if (float.IsInfinity(first.X) || float.IsInfinity(first.Y)) return;
             if (float.IsInfinity(second.X) || float.IsInfinity(second.Y)) return;

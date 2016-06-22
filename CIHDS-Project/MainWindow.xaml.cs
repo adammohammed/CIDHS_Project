@@ -21,7 +21,6 @@ namespace CIHDS_Project
         CoordinateMapper cm;
         bool setup = false;
         bool VidEnabled = true;
-        int id = 0;
         private bool canvasSized = false;
         private Stopwatch s = new Stopwatch();
         private Config c;

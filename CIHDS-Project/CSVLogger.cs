@@ -9,7 +9,7 @@ using Combinatorics.Collections;
 
 namespace CIHDS_Project
 {
-    public class CSVLogger
+    class CSVLogger
     {
         // Saves Kinects Data to CSV to Desktop 
         int _current = 0;
@@ -21,15 +21,14 @@ namespace CIHDS_Project
         public string Folder { get; protected set; }
 
         public string Result { get; protected set; }
-        public Stopwatch stopwatch;
-        public long timestamp = 0;
-        public Body bd;
-        public int nodes = 0;
-        public string CSVWriteDirectory;
+        private Stopwatch stopwatch;
+        private Body bd;
+        private int nodes = 0;
+        private string CSVWriteDirectory;
         private string DesktopFolder = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
 
-        public IList<int> comboIndex = Enumerable.Range(0, 25).Select(x => x * 3).ToList();
-        public Combinations<int> x_ratios;
+        private IList<int> comboIndex = Enumerable.Range(0, 25).Select(x => x * 3).ToList();
+        private Combinations<int> x_ratios;
         private bool combosCalculated = false;
 
         public void Start(string date)
