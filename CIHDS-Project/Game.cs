@@ -11,12 +11,14 @@ namespace CIHDS_Project
 
 
         public static string StatusText = "Put your arms in the air to play!";
-        public enum GameState : int { Begin, Calibrating, FwdWalk, BwdWalk, LeftWalk, RightWalk, SaveData, Finish};
+        public enum GameState : int { Begin, Calibrating, FwdWalk, BwdWalk, LRCalibratingZ, LRCalibratingX, LeftWalk, RightWalk, SaveData, Finish};
         public static string[] stateNames = {
             "Begin",
             "Calibrating",
             "ForwardWalking",
             "BackwardWalking",
+            "CalibratingLR_Z",
+            "CalibratingLR_X",
             "LeftWalking",
             "RightWalking",
             "SaveData",
@@ -29,8 +31,9 @@ namespace CIHDS_Project
 
         // Forward Walking end position
         public static float forwardDistance = 1.0f;
-        
+
         // Left walking end position
+        public static float Z_LRDistance = (backwardDistance + forwardDistance) / 2.0f;
         public static float leftDistance = -0.80f;
 
         // Right walking end position
@@ -143,7 +146,7 @@ namespace CIHDS_Project
                         {
                             count = 0;
                             c.Stop(outputName);
-                            gameState = GameState.FwdWalk;
+                            gameState++;
                         }
                     }
                     break;
@@ -164,7 +167,7 @@ namespace CIHDS_Project
                         {
                             count = 0;
                             c.Stop(outputName);
-                            gameState = GameState.BwdWalk;
+                            gameState++;
                         }
                     }
                     break;
@@ -194,12 +197,62 @@ namespace CIHDS_Project
                         {
                             count = 0;
                             c.Stop(outputName);
-                            gameState = GameState.LeftWalk;
+                            gameState++;
                         }
                     }
 
                     break;
 
+                case GameState.LRCalibratingZ:
+                    StatusText = "Move into position!";
+
+                    if(shoulder.Z > Z_LRDistance+thresholdValue)
+                    {
+                        StatusText = StatusText + " - move forward";
+                        count = 0;
+                    }
+                    else if (shoulder.Z < Z_LRDistance-thresholdValue)
+                    {
+                        StatusText = StatusText + " - move backward";
+                        count = 0;
+                    }
+                    else
+                    {
+                        StatusText = "Stop Right There!";
+                        count++;
+                        if (count > 10)
+                        {
+                            count = 0;
+                            gameState++;
+                        }
+                    } 
+
+                    break;
+                case GameState.LRCalibratingX:
+                    StatusText = "Move into position!";
+
+                    if(positionX < rightDistance-thresholdValue)
+                    {
+                        StatusText = StatusText + " - move right";
+                        count = 0;
+                    }
+                    else if (positionX > rightDistance+thresholdValue)
+                    {
+                        StatusText = StatusText + " - move left";
+                        count = 0;
+                    }
+                    else
+                    {
+                        StatusText = "Stop Right There!";
+                        count++;
+                        if (count > 10)
+                        {
+                            count = 0;
+                            gameState++;
+                        }
+                    } 
+
+                    break;
                 case GameState.LeftWalk:
                     StatusText = "Turn left and walk - ";
                     // Check to see if between start/end position
@@ -219,7 +272,7 @@ namespace CIHDS_Project
                         {
                             count = 0;
                             c.Stop(outputName);
-                            gameState = GameState.RightWalk;
+                            gameState++;
                         } 
                     }
                     else
@@ -249,7 +302,7 @@ namespace CIHDS_Project
                             count = 0;
                             c.Stop(outputName);
                             StatusText = "Saving/Processing Data...";
-                            gameState = GameState.SaveData;
+                            gameState++;
                         } 
                     }
                     else
