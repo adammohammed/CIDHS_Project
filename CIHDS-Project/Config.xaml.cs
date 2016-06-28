@@ -145,14 +145,21 @@ namespace CIHDS_Project
                 {
                     MessageBox.Show("Start Distance - Forward Distance Must be greater than 0.8m");
                 }
-                this.Close();
+                this.Hide();
             }
 
         }
 
         private void cancelBtn_Clicked(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            this.Hide();
         }
+
+        private void ConfigWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            e.Cancel = true;
+            this.Hide();
+        }
+
     }
 }

@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CIHDS_Project"
         mc:Ignorable="d"
-        Title="Config" Height="400" Width="400" Loaded="ConfigWindow_Loaded" ResizeMode="NoResize">
+        Title="Configuration" Height="400" Width="400" Loaded="ConfigWindow_Loaded" ResizeMode="NoResize"
+        Closing="ConfigWindow_Closing">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="70*"/>

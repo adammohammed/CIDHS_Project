@@ -166,16 +166,19 @@ namespace CIHDS_Project
                 sensor.Close();
                 sensor = null;
             }
-            if(_reader != null)
+            if (_reader != null)
             {
                 _reader.Dispose();
                 _reader = null;
             }
-            if(c != null)
-            {
-                c.Close();
-            }
+            c.Close();
+        }
 
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+
+            Application.Current.Shutdown();
         }
     }
 }
