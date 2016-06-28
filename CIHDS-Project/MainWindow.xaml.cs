@@ -44,10 +44,13 @@ namespace CIHDS_Project
         {
             sensor = KinectSensor.GetDefault();
 
+
             c = new Config();
+
             c.LRDist_float = Game.rightDistance;
             c.FDist_float = Game.forwardDistance;
             c.StartDist_float = Game.backwardDistance;
+
             this.stepBtn.Click += StepBtn_Click;
             this.KeyDown += MainWindow_KeyDown;
             if(sensor != null)
@@ -61,14 +64,19 @@ namespace CIHDS_Project
                 {
                     this.CreateBones();
                 }
-            } 
+            }
         }
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
             if(e.Key == Key.C)
             {
-                c.Show();
+                if(c != null){
+                    c.Show();
+                }else{
+                    c = new Config();
+                }
+
             }
         }
 
@@ -78,12 +86,13 @@ namespace CIHDS_Project
         }
 
         private void Reader_FrameArrived(object sender, MultiSourceFrameArrivedEventArgs e)
-        { 
+        {
             var refFrame = e.FrameReference.AcquireFrame();
 
             // update the video stream
 
             VidEnabled = this.c.VideoEnabled;
+
 
             using(var frame = refFrame.ColorFrameReference.AcquireFrame())
             {
@@ -93,7 +102,7 @@ namespace CIHDS_Project
                     {
                         this.canvas.Width = this.Width;
                         this.canvas.Height = this.Height;
-                        setup = true; 
+                        setup = true;
                     }
                     if (VidEnabled)
                     {
@@ -128,19 +137,22 @@ namespace CIHDS_Project
                             if(body.IsTracked)
                             {
                                 canvas.DrawSkeleton(body.Joints, p, this.cm);
+
                                 if(Game.gameState == Game.GameState.Begin)
                                 {
                                     Game.backwardDistance = c.StartDist_float;
                                     Game.forwardDistance = c.FDist_float;
                                     Game.leftDistance = -1.0f * c.LRDist_float;
                                     Game.rightDistance = 1.0f * c.LRDist_float;
+                                    Game.Z_LRDistance = (Game.backwardDistance + Game.forwardDistance) / 2.0f;
                                 }
+
                                 Game.RunGame(body);             // Game.cs Entry Point
-                                
+
                             } // if body is tracked
                         } // if body null
                     } //foreach
-                } // if frame 
+                } // if frame
             } // Using
 
             // Update the user text!
@@ -159,6 +171,11 @@ namespace CIHDS_Project
                 _reader.Dispose();
                 _reader = null;
             }
+            if(c != null)
+            {
+                c.Close();
+            }
+
         }
     }
 }

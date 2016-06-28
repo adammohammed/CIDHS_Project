@@ -12,14 +12,20 @@
         <Image Name="camera" Height="Auto" Width="Auto"/>
         <Canvas Name="canvas" Height="Auto" Width="Auto"/>
         <Grid VerticalAlignment="Top">
-            <TextBlock Name="instructionsTb" VerticalAlignment="Bottom" Text="Put your arms in the air to play!" TextAlignment="Center" TextWrapping="Wrap" FontSize="40" Background="#FFE3FAFF" />
-        </Grid> 
+            <TextBlock Name="instructionsTb" VerticalAlignment="Bottom" Text="Put your arms in the air to play!" TextAlignment="Center" TextWrapping="Wrap" FontSize="40" Background="White" />
+            <TextBlock x:Name="textBlock" HorizontalAlignment="Right" Margin="0,53.203,0,-29.83" TextWrapping="Wrap" FontSize="18.667" VerticalAlignment="Top" Foreground="White" Background="White" Height="29.83" Width="211.668" TextAlignment="Center"><Run Background="White" Text="Press 'c' to configure" Foreground="Black"/></TextBlock>
+        </Grid>
         <Grid>
-            <Grid VerticalAlignment="Bottom">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="82*"/>
+                <RowDefinition Height="42*"/>
+                <RowDefinition Height="613*"/>
+            </Grid.RowDefinitions>
+            <Grid VerticalAlignment="Bottom" Grid.Row="2">
                 <Button Name="stepBtn" Content="Reset/Next User" HorizontalAlignment="Right" FontSize="24" Padding="5,5,5,5" Margin="0,0,10,10" 
                         Style="{DynamicResource SimpleButton}" Click="StepBtn_Click" Visibility="Hidden">
                 </Button>
-            </Grid> 
+            </Grid>
         </Grid>
     </Grid>
 </Window>
