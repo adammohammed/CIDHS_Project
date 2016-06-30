@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace CIHDS_Project
 {
-    static class Game
+    static partial class Game
     {
 
 
@@ -62,6 +62,8 @@ namespace CIHDS_Project
         private static bool data_processed = false;
         private static string outputName;
         private static string currentUser;
+        private static float prevZ = 100;
+        private static float prevX = 100;
         
         public static void RunGame(Body b)
         {
@@ -99,19 +101,21 @@ namespace CIHDS_Project
                     float rhand = joints[JointType.HandRight].Position.Y;
                     float lhand = joints[JointType.HandLeft].Position.Y;
                     float topSpine = joints[JointType.SpineShoulder].Position.Y;
-                    
+
                     upperPositionThreshold = backwardDistance + thresholdValue;
                     lowerPositionThreshold = backwardDistance - thresholdValue;
 
                     lowerWalkingThreshold = forwardDistance - thresholdValue;
                     upperWalkingThreshold = forwardDistance + thresholdValue;
 
+                    prevZ = 100;
+                    prevX = 100;
                     data_processed = false;
-                    if(rhand > topSpine && lhand > topSpine)
+                    if (rhand > topSpine && lhand > topSpine)
                     {
-                        
+
                         count++;
-                        if(count > 50)
+                        if (count > 50)
                         {
                             currentUser = DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
                             gameState = GameState.Calibrating;
@@ -128,7 +132,7 @@ namespace CIHDS_Project
                 case GameState.Calibrating:
                     StatusText = "Move into position!";
 
-                    if(shoulder.Z > upperPositionThreshold)
+                    if (shoulder.Z > upperPositionThreshold)
                     {
                         StatusText = StatusText + " - move forward";
                         count = 0;
@@ -158,6 +162,17 @@ namespace CIHDS_Project
                     // Check to see if between start and end position
                     if(shoulder.Z > backwardDistance || shoulder.Z < forwardDistance) recordFrame = false;
 
+                    if(prevZ == 100)
+                    {
+                        prevZ = shoulder.Z;
+                        recordFrame = false;
+                    }else
+                    {
+                        // Record if and only if they are moving forward at 
+                        recordFrame = ((shoulder.Z - prevZ) / (33.0f) * 1000.0f < -0.05f);
+                        prevZ = shoulder.Z;
+                    }
+
                     if(shoulder.Z < upperWalkingThreshold && shoulder.Z > lowerWalkingThreshold)
                     {
                         StatusText = "Stop Right There!";
@@ -167,6 +182,7 @@ namespace CIHDS_Project
                         {
                             count = 0;
                             c.Stop(outputName);
+                            prevZ = 100;
                             gameState++;
                         }
                     }
@@ -178,6 +194,17 @@ namespace CIHDS_Project
 
                     // Check to see if between start/end position
                     if (shoulder.Z > backwardDistance || shoulder.Z < forwardDistance) recordFrame = false;
+
+                    if(prevZ == 100)
+                    {
+                        prevZ = shoulder.Z;
+                        recordFrame = false;
+                    }else
+                    {
+                        // Record if and only if they are moving forward at 
+                        recordFrame = ((shoulder.Z - prevZ) / (33.0f) * 1000.0f > 0.05f);
+                        prevZ = shoulder.Z;
+                    }
                     
                     if(shoulder.Z > upperPositionThreshold)
                     {
@@ -258,6 +285,17 @@ namespace CIHDS_Project
                     // Check to see if between start/end position
                     if (positionX > 0 || positionX < leftDistance) recordFrame = false;
                     
+                    if(prevX == 100)
+                    {
+                        prevX = shoulder.X;
+                        recordFrame = false;
+                    }else
+                    {
+                        // Record if and only if they are moving forward at 
+                        recordFrame = ((shoulder.X - prevX) / (33.0f) * 1000.0f < -0.05f);
+                        prevX = shoulder.X;
+                    }
+
                     if(positionX > leftDistance+thresholdValue)
                     {
                         StatusText += positionX.ToString() ;
@@ -272,6 +310,7 @@ namespace CIHDS_Project
                         {
                             count = 0;
                             c.Stop(outputName);
+                            prevX = 100;
                             gameState++;
                         } 
                     }
@@ -287,6 +326,17 @@ namespace CIHDS_Project
                     
                     if (positionX < 0 || positionX > rightDistance) recordFrame = false;
 
+                    if(prevX == 100)
+                    {
+                        prevX = shoulder.X;
+                        recordFrame = false;
+                    }else
+                    {
+                        // Record if and only if they are moving forward at 
+                        recordFrame = ((shoulder.X - prevX) / (33.0f) * 1000.0f > 0.05f);
+                        prevX = shoulder.X;
+                    }
+
                     if(positionX < rightDistance - thresholdValue)
                     {
                         StatusText += positionX.ToString() ;
@@ -301,6 +351,7 @@ namespace CIHDS_Project
                         {
                             count = 0;
                             c.Stop(outputName);
+                            prevX = 100;
                             StatusText = "Saving/Processing Data...";
                             gameState++;
                         } 
