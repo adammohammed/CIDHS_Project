@@ -81,9 +81,10 @@ namespace CIHDS_Project
                     _hasEnumeratedJoints = true;
                 }
 
+                line.Append(string.Format("{0},", stopwatch.ElapsedMilliseconds));
                 foreach (var joint in body.Joints.Values)
                 {
-                    line.Append(string.Format("{0},{1},{2},{3}", stopwatch.ElapsedMilliseconds, joint.Position.X, joint.Position.Y, joint.Position.Z));
+                    line.Append(string.Format("{0},{1},{2},", joint.Position.X, joint.Position.Y, joint.Position.Z));
                     if (joint.TrackingState == TrackingState.NotTracked || joint.TrackingState == TrackingState.Inferred)
                     {
                         notTracked.Append("0");
