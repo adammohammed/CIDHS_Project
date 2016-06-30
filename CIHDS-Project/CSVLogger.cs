@@ -30,6 +30,7 @@ namespace CIHDS_Project
         private IList<int> comboIndex = Enumerable.Range(0, 25).Select(x => x * 3).ToList();
         private Combinations<int> x_ratios;
         private bool combosCalculated = false;
+        private string year;
 
         public void Start(string date)
         {
@@ -38,6 +39,8 @@ namespace CIHDS_Project
             IsRecording = true;
             stopwatch = new Stopwatch();
             stopwatch.Start();
+            year = DateTime.UtcNow.ToString("yyyy");
+            year = year + "*";
             Folder = DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
             
             Directory.CreateDirectory(Folder);
@@ -149,9 +152,13 @@ namespace CIHDS_Project
             
             // Takes the velocity file and adds node acceleration in each coordinate axis
             calculateDerivatives(bd, Path.Combine(CSVWriteDirectory, outputFile + "_vel.csv"), Path.Combine(CSVWriteDirectory, outputFile + "_vel_acc.csv"), nodes, nodes * 3 + 25);
-            
+
             // Gets rid of the .line folder 
-            Directory.Delete(Folder, true);
+            var lineDirectories = Directory.GetDirectories(Directory.GetCurrentDirectory(), year);
+            foreach(var dir in lineDirectories)
+            {
+                Directory.Delete(dir, true);
+            }
         }
 
         private void calculateDerivatives(Body b, string inFile, string outFile, int nodes, int offset)
